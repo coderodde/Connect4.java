@@ -87,8 +87,8 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
         return false;
     }
     
-    public void makePly(final int x) {
-        
+    public ConnectFourBoard makePly(final int x, final PlayerType playerType) {
+        return dropAtX(x, playerType);
     }
     
     private boolean isTerminalHorizontal(final PlayerType playerType) {
@@ -157,7 +157,7 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
             diagonalCheck:
             for (int x = lastX; x < COLUMNS; x++) {
                 for (int i = 0; i < VICTORY_LENGTH; i++) {
-                    if (boardData[y + i][x - i] != playerType) {
+                    if (boardData[y - i][x - i] != playerType) {
                         continue diagonalCheck;
                     }
                 }

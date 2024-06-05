@@ -73,17 +73,23 @@ public final class AlphaBetaPruningSearchEngine<S extends GameState<S>>
         } 
         
         if (depth == 0) {
-            // Once here, the deepest depth reached and we still do not have a
-            // winner:
-            return 0.0;
+            
+            final double score = heuristicFunction.evaluate(state);
+            
+            if (bestValue < score) {
+                bestValue = score;
+                bestMoveState = bestStatePath.getFirst();
+            }
+            
+            return score;
         }
-        
-        bestStatePath.addLast(state);
         
         if (playerType == PlayerType.MAXIMIZING_PLAYER) {
             double value = Double.NEGATIVE_INFINITY;
             
             for (final S child : state.expand(playerType)) {
+                bestStatePath.addLast(child);
+
                 value = Math.max(
                         value,
                         alphaBetaImpl(
@@ -107,6 +113,8 @@ public final class AlphaBetaPruningSearchEngine<S extends GameState<S>>
             double value = Double.POSITIVE_INFINITY;
             
             for (final S child : state.expand(playerType)) {
+                bestStatePath.addLast(child);
+                
                 value = Math.min(
                         value, 
                         alphaBetaImpl(
