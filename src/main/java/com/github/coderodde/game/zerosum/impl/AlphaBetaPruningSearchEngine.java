@@ -58,18 +58,12 @@ public final class AlphaBetaPruningSearchEngine<S extends GameState<S>>
                                  double beta,
                                  final PlayerType playerType) {
         
-        if (state.isTerminal(PlayerType.MINIMIZING_PLAYER)) {
-            return minimizingPlayerVictoryScore + depth;
-        } else if (state.isTerminal(PlayerType.MAXIMIZING_PLAYER)) {
+        if (state.isWinningFor(PlayerType.MINIMIZING_PLAYER) &&
+            state.isWinningFor(PlayerType.MAXIMIZING_PLAYER) &&
+            state.isTie()) {
             
-            final double score = maximizingPlayerVictoryScore - depth;
-            
-            if (bestValue < score) {
-                bestValue = score;
-                bestMoveState = bestStatePath.getFirst();
-            }
-            
-            return score;
+            bestMoveState = null;
+            return Double.NaN;
         } 
         
         if (depth == 0) {
@@ -101,14 +95,14 @@ public final class AlphaBetaPruningSearchEngine<S extends GameState<S>>
                 
                 bestStatePath.removeLast();
                 
-                alpha = Math.max(alpha, value);
-                
                 if (value > beta) {
                     break;
                 }
                 
-                return value;
+                alpha = Math.max(alpha, value);
             }
+                
+            return value;
         } else {
             double value = Double.POSITIVE_INFINITY;
             
@@ -126,16 +120,14 @@ public final class AlphaBetaPruningSearchEngine<S extends GameState<S>>
                 
                 bestStatePath.removeLast();
                 
-                beta = Math.min(beta, value);
-                
                 if (value < alpha) {
                     break;
                 }
+                
+                beta = Math.min(beta, value);
             }
             
             return value;
         }
-        
-        throw new IllegalStateException("Should not get here.");
     }   
 }

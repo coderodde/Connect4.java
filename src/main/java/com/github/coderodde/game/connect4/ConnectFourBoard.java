@@ -67,7 +67,7 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
     }
     
     @Override
-    public boolean isTerminal(final PlayerType playerType) {
+    public boolean isWinningFor(final PlayerType playerType) {
         if (isTerminalHorizontal(playerType)) {
             return true;
         }
@@ -85,6 +85,17 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
         }
         
         return false;
+    }
+    
+    @Override
+    public boolean isTie() {
+        for (int x = 0; x < COLUMNS; x++) {
+            if (boardData[0][x] == null) {
+                return false;
+            }
+        }
+        
+        return true;
     }
     
     public ConnectFourBoard makePly(final int x, final PlayerType playerType) {
@@ -174,10 +185,16 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
     }
     
     private ConnectFourBoard dropAtX(final int x, final PlayerType playerType) {
+        final ConnectFourBoard nextBoard = new ConnectFourBoard();
+        
+        for (int y = 0; y < ROWS; y++) {
+            nextBoard.boardData[y] = Arrays.copyOf(this.boardData[y], COLUMNS);
+        }
+        
         for (int y = ROWS - 1; y >= 0; y--) {
-            if (boardData[y][x] == null) {
-                boardData[y][x] = playerType;
-                return new ConnectFourBoard(boardData);
+            if (nextBoard.boardData[y][x] == null) {
+                nextBoard.boardData[y][x] = playerType;
+                return nextBoard;
             }
         }
         

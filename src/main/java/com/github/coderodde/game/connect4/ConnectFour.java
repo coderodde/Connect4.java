@@ -19,7 +19,9 @@ public class ConnectFour {
     private static final int MINIMUM_DEPTH = 1;
 
     public static void main(String[] args) {
-        final int depth = parseDepth(args);
+        final int depth = 8;parseDepth(args);
+        
+        System.out.printf(">>> Requested search depth: %d.\n", depth);
         
         final Scanner scanner = new Scanner(System.in);
         final HeuristicFunction<ConnectFourBoard> heuristicFunction = 
@@ -62,12 +64,35 @@ public class ConnectFour {
                 
                 long startTime = System.currentTimeMillis();
                 
-                currentBoard = bot.search(currentBoard, depth);
+                final ConnectFourBoard nextConnectFourBoard = 
+                        bot.search(currentBoard, depth);
                 
                 long endTime = System.currentTimeMillis();
                 
                 System.out.printf(">>> AI took %d milliseconds.\n",
                                   endTime - startTime);
+                
+                if (nextConnectFourBoard != null) {
+                    currentBoard = nextConnectFourBoard;
+                }
+                
+                if (currentBoard.isWinningFor(PlayerType.MINIMIZING_PLAYER)) {
+                    System.out.println(">>> You won!");
+                    System.out.println(currentBoard);
+                    return;
+                }
+                
+                if (currentBoard.isWinningFor(PlayerType.MAXIMIZING_PLAYER)) {
+                    System.out.println(">>> AI won!");
+                    System.out.println(currentBoard);
+                    return;
+                }
+                
+                if (currentBoard.isTie()) {
+                    System.out.println(">>> It's a tie!");
+                    System.out.println(currentBoard);
+                    return;
+                }
                 
                 System.out.println(">>> Board after AI's move:");
             }

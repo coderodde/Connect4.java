@@ -29,5 +29,12 @@ public interface GameState<B extends GameState<B>> {
      * 
      * @return a boolean flag indicating whether this game state is terminal.
      */
-    public boolean isTerminal(final PlayerType playerType);
+    public boolean isWinningFor(final PlayerType playerType);
+    
+    /**
+     * Returns {@code true} iff this game state is full, and is thus a tie.
+     * 
+     * @return {@code true} only if this game states represents a tie.
+     */
+    public boolean isTie();
 }
