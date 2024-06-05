@@ -117,14 +117,14 @@ public final class ConnectFourHeuristicFunction
                     state.boardData[y - 1][x - 1] 
                         == PlayerType.MAXIMIZING_PLAYER) {
                     
-                    sum += THREE_BLOCKS_SCORE;
+                    sum += TWO_BLOCKS_SCORE;
                 } else if (state.boardData[y][x] 
                         == PlayerType.MINIMIZING_PLAYER
                         &&
                         state.boardData[y - 1][x - 1] 
                         == PlayerType.MINIMIZING_PLAYER) {
                     
-                    sum -= THREE_BLOCKS_SCORE;
+                    sum -= TWO_BLOCKS_SCORE;
                 }
             }
         }
@@ -141,7 +141,7 @@ public final class ConnectFourHeuristicFunction
                     state.boardData[y][x + 1] == PlayerType.MAXIMIZING_PLAYER &&
                     state.boardData[y][x + 2] == PlayerType.MAXIMIZING_PLAYER) {
                     
-                    sum += TWO_BLOCKS_SCORE;
+                    sum += THREE_BLOCKS_SCORE;
                 } else if (state.boardData[y][x] 
                         == PlayerType.MINIMIZING_PLAYER
                         &&
