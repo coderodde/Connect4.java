@@ -98,6 +98,8 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
         return true;
     }
     
+    
+    
     public ConnectFourBoard makePly(final int x, final PlayerType playerType) {
         return dropAtX(x, playerType);
     }

@@ -37,4 +37,14 @@ public interface GameState<B extends GameState<B>> {
      * @return {@code true} only if this game states represents a tie.
      */
     public boolean isTie();
+    
+    /**
+     * Returns {@code true} iff this state is terminal: has a winning line or is
+     * fully filled.
+     */
+    public default boolean isTerminal() {
+        return isWinningFor(PlayerType.MAXIMIZING_PLAYER) ||
+               isWinningFor(PlayerType.MINIMIZING_PLAYER) ||
+               isTie();
+    }
 }

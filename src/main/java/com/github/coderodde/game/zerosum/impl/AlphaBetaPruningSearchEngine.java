@@ -58,24 +58,8 @@ public final class AlphaBetaPruningSearchEngine<S extends GameState<S>>
                                  double beta,
                                  final PlayerType playerType) {
         
-        if (state.isWinningFor(PlayerType.MINIMIZING_PLAYER) &&
-            state.isWinningFor(PlayerType.MAXIMIZING_PLAYER) &&
-            state.isTie()) {
-            
-            bestMoveState = null;
-            return Double.NaN;
-        } 
-        
-        if (depth == 0) {
-            
-            final double score = heuristicFunction.evaluate(state);
-            
-            if (bestValue < score) {
-                bestValue = score;
-                bestMoveState = bestStatePath.getFirst();
-            }
-            
-            return score;
+        if (depth == 0 || state.isTerminal()) {
+            return heuristicFunction.evaluate(state);
         }
         
         if (playerType == PlayerType.MAXIMIZING_PLAYER) {

@@ -13,13 +13,13 @@ import java.util.Scanner;
  */
 public class ConnectFour {
     
-    private static final double MINIMUM_PLAYER_VICTORY_SCORE = -1E6;
-    private static final double MAXIMUM_PLAYER_VICTORY_SCORE = +1E6;
+    private static final double MINIMUM_PLAYER_VICTORY_SCORE = +1E6;
+    private static final double MAXIMUM_PLAYER_VICTORY_SCORE = -1E6;
     private static final int DEFAULT_DEPTH = 4;
     private static final int MINIMUM_DEPTH = 1;
 
     public static void main(String[] args) {
-        final int depth = 8;parseDepth(args);
+        final int depth = parseDepth(args);
         
         System.out.printf(">>> Requested search depth: %d.\n", depth);
         
