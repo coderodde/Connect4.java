@@ -1,4 +1,4 @@
-package com.github.coderodde.game.connect4;
+package com.github.coderodde.game.zerosum;
 
 /**
  *

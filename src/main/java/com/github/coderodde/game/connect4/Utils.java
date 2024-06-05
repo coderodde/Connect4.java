@@ -1,5 +1,7 @@
 package com.github.coderodde.game.connect4;
 
+import com.github.coderodde.game.zerosum.PlayerType;
+
 /**
  *
  * @version 1.0.0 (Jun 5, 2024)

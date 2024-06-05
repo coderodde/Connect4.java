@@ -1,5 +1,6 @@
 package com.github.coderodde.game.connect4;
 
+import com.github.coderodde.game.zerosum.PlayerType;
 import com.github.coderodde.game.zerosum.GameState;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,22 +11,22 @@ import java.util.List;
  * @version 1.0.0 (Jun 5, 2024)
  * @since 1.0.0 (Jun 5, 2024)
  */
-public class Board implements GameState<Board> {
+public class ConnectFourBoard implements GameState<ConnectFourBoard> {
 
-    private static final int ROWS = 6;
-    private static final int COLUMNS = 7;
-    private static final int VICTORY_LENGTH = 4;
+    static final int ROWS = 6;
+    static final int COLUMNS = 7;
+    static final int VICTORY_LENGTH = 4;
     
-    private final PlayerType[][] boardData = new PlayerType[ROWS][COLUMNS];
-    private final List<Board> childrenTree = new ArrayList<>(COLUMNS);
+    final PlayerType[][] boardData = new PlayerType[ROWS][COLUMNS];
+    private final List<ConnectFourBoard> childrenTree = new ArrayList<>(COLUMNS);
     
-    public Board(final PlayerType[][] boardData) {
+    public ConnectFourBoard(final PlayerType[][] boardData) {
         for (int y = 0; y < ROWS; y++) {
             this.boardData[y] = Arrays.copyOf(boardData[y], COLUMNS);
         }
     }
     
-    public Board() {
+    public ConnectFourBoard() {
         
     }
     
@@ -50,7 +51,7 @@ public class Board implements GameState<Board> {
     }
     
     @Override
-    public List<Board> expand(final PlayerType playerType) {
+    public List<ConnectFourBoard> expand(final PlayerType playerType) {
         if (!childrenTree.isEmpty()) {
             // Children are already computed, just return them:
             return childrenTree;
@@ -172,11 +173,11 @@ public class Board implements GameState<Board> {
         return boardData[0][x] == null;
     }
     
-    private Board dropAtX(final int x, final PlayerType playerType) {
+    private ConnectFourBoard dropAtX(final int x, final PlayerType playerType) {
         for (int y = ROWS - 1; y >= 0; y--) {
             if (boardData[y][x] == null) {
                 boardData[y][x] = playerType;
-                return new Board(boardData);
+                return new ConnectFourBoard(boardData);
             }
         }
         

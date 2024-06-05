@@ -1,7 +1,8 @@
 package com.github.coderodde.game.zerosum.impl;
 
-import com.github.coderodde.game.connect4.PlayerType;
+import com.github.coderodde.game.zerosum.PlayerType;
 import com.github.coderodde.game.zerosum.GameState;
+import com.github.coderodde.game.zerosum.HeuristicFunction;
 import com.github.coderodde.game.zerosum.SearchAlgorithm;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -22,13 +23,16 @@ public final class AlphaBetaPruningSearchEngine<S extends GameState<S>>
     private double bestValue;
     private S bestMoveState;
     private final Deque<S> bestStatePath = new ArrayDeque<>();
+    private final HeuristicFunction<S> heuristicFunction;
     private final double minimizingPlayerVictoryScore;
     private final double maximizingPlayerVictoryScore;
     
     public AlphaBetaPruningSearchEngine(
+            final HeuristicFunction<S> heuristicFunction,
             final double minimizingPlayerVictoryScore,
             final double maximizingPlayerVictoryScore) {
         
+        this.heuristicFunction = heuristicFunction;
         this.minimizingPlayerVictoryScore = minimizingPlayerVictoryScore;
         this.maximizingPlayerVictoryScore = maximizingPlayerVictoryScore;
     }
@@ -69,6 +73,8 @@ public final class AlphaBetaPruningSearchEngine<S extends GameState<S>>
         } 
         
         if (depth == 0) {
+            // Once here, the deepest depth reached and we still do not have a
+            // winner:
             return 0.0;
         }
         

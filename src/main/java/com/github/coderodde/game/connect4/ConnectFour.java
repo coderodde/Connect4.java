@@ -7,10 +7,10 @@ import java.util.Scanner;
  * @version 1.0.0 (Jun 5, 2024)
  * @since 1.0.0 (Jun 5, 2024)
  */
-public class Connect4 {
+public class ConnectFour {
 
     public static void main(String[] args) {
-        Board board = new Board();
+        ConnectFourBoard board = new ConnectFourBoard();
         
         final Scanner scanner = new Scanner(System.in);
         

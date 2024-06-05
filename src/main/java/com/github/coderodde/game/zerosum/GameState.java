@@ -1,6 +1,5 @@
 package com.github.coderodde.game.zerosum;
 
-import com.github.coderodde.game.connect4.PlayerType;
 import java.util.List;
 
 /**
