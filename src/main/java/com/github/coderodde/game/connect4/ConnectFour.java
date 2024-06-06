@@ -2,9 +2,9 @@ package com.github.coderodde.game.connect4;
 
 import com.github.coderodde.game.zerosum.HeuristicFunction;
 import com.github.coderodde.game.zerosum.PlayerType;
-import com.github.coderodde.game.zerosum.SearchAlgorithm;
 import com.github.coderodde.game.zerosum.impl.AlphaBetaPruningSearchEngine;
 import java.util.Scanner;
+import com.github.coderodde.game.zerosum.SearchEngine;
 
 /**
  *
@@ -27,7 +27,7 @@ public class ConnectFour {
         final HeuristicFunction<ConnectFourBoard> heuristicFunction = 
                 new ConnectFourHeuristicFunction();
         
-        final SearchAlgorithm<ConnectFourBoard> bot = 
+        final SearchEngine<ConnectFourBoard> bot = 
                 new AlphaBetaPruningSearchEngine<>(
                         heuristicFunction, 
                         MINIMUM_PLAYER_VICTORY_SCORE, 

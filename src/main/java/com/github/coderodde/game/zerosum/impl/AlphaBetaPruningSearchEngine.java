@@ -3,9 +3,9 @@ package com.github.coderodde.game.zerosum.impl;
 import com.github.coderodde.game.zerosum.PlayerType;
 import com.github.coderodde.game.zerosum.GameState;
 import com.github.coderodde.game.zerosum.HeuristicFunction;
-import com.github.coderodde.game.zerosum.SearchAlgorithm;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import com.github.coderodde.game.zerosum.SearchEngine;
 
 /**
  * This class implements the 
@@ -18,14 +18,10 @@ import java.util.Deque;
  * @since 1.0.0 (Jun 5, 2024)
  */
 public final class AlphaBetaPruningSearchEngine<S extends GameState<S>>
-        implements SearchAlgorithm<S> {
+        implements SearchEngine<S> {
 
-    private double bestValue;
     private S bestMoveState;
-    private final Deque<S> bestStatePath = new ArrayDeque<>();
     private final HeuristicFunction<S> heuristicFunction;
-    private final double minimizingPlayerVictoryScore;
-    private final double maximizingPlayerVictoryScore;
     
     public AlphaBetaPruningSearchEngine(
             final HeuristicFunction<S> heuristicFunction,
@@ -33,23 +29,47 @@ public final class AlphaBetaPruningSearchEngine<S extends GameState<S>>
             final double maximizingPlayerVictoryScore) {
         
         this.heuristicFunction = heuristicFunction;
-        this.minimizingPlayerVictoryScore = minimizingPlayerVictoryScore;
-        this.maximizingPlayerVictoryScore = maximizingPlayerVictoryScore;
     }
     
     @Override
     public S search(final S root, final int depth) {
-        bestValue = Double.NEGATIVE_INFINITY;
         bestMoveState = null;
-        bestStatePath.clear();
         
-        alphaBetaImpl(root, 
-                      depth,
-                      Double.NEGATIVE_INFINITY, 
-                      Double.POSITIVE_INFINITY,
-                      PlayerType.MAXIMIZING_PLAYER);
+        alphaBetaRootImpl(root, 
+                          depth,
+                          Double.NEGATIVE_INFINITY, 
+                          Double.POSITIVE_INFINITY);
         
         return bestMoveState;
+    }
+    
+    private void alphaBetaRootImpl(final S root, 
+                                   final int depth,
+                                   double alpha,
+                                   double beta) {
+        bestMoveState = null;
+        
+        // The first turn belongs to AI/the maximizing player:
+        double tentativeValue = Double.NEGATIVE_INFINITY;
+        
+        for (final S child : root.expand(PlayerType.MAXIMIZING_PLAYER)) {
+            double value = alphaBetaImpl(child,
+                                         depth - 1,
+                                         Double.NEGATIVE_INFINITY,
+                                         Double.POSITIVE_INFINITY,
+                                         PlayerType.MINIMIZING_PLAYER);
+            
+            if (tentativeValue < value) {
+                tentativeValue = value;
+                bestMoveState = child;
+            }
+            
+            if (value > beta) {
+                break;
+            }
+
+            alpha = Math.max(alpha, value);
+        }
     }
     
     private double alphaBetaImpl(final S state,
@@ -66,8 +86,6 @@ public final class AlphaBetaPruningSearchEngine<S extends GameState<S>>
             double value = Double.NEGATIVE_INFINITY;
             
             for (final S child : state.expand(playerType)) {
-                bestStatePath.addLast(child);
-
                 value = Math.max(
                         value,
                         alphaBetaImpl(
@@ -76,8 +94,6 @@ public final class AlphaBetaPruningSearchEngine<S extends GameState<S>>
                                 alpha,
                                 beta,
                                 PlayerType.MINIMIZING_PLAYER));
-                
-                bestStatePath.removeLast();
                 
                 if (value > beta) {
                     break;
@@ -91,8 +107,6 @@ public final class AlphaBetaPruningSearchEngine<S extends GameState<S>>
             double value = Double.POSITIVE_INFINITY;
             
             for (final S child : state.expand(playerType)) {
-                bestStatePath.addLast(child);
-                
                 value = Math.min(
                         value, 
                         alphaBetaImpl(
@@ -101,8 +115,6 @@ public final class AlphaBetaPruningSearchEngine<S extends GameState<S>>
                                 alpha, 
                                 beta, 
                                 PlayerType.MAXIMIZING_PLAYER));
-                
-                bestStatePath.removeLast();
                 
                 if (value < alpha) {
                     break;

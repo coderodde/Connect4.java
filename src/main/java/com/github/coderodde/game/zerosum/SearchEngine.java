@@ -7,7 +7,7 @@ package com.github.coderodde.game.zerosum;
  * @version 1.0.0 (Jun 5, 2024)
  * @since 1.0.0 (Jun 5, 2024)
  */
-public interface SearchAlgorithm<S extends GameState<S>> {
+public interface SearchEngine<S extends GameState<S>> {
     
     /**
      * Runs the search for the next most move.
