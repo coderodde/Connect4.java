@@ -7,7 +7,9 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- *
+ * This class implements a board that corresponds to a game state in the game
+ * search tree.
+ * 
  * @version 1.0.0 (Jun 5, 2024)
  * @since 1.0.0 (Jun 5, 2024)
  */

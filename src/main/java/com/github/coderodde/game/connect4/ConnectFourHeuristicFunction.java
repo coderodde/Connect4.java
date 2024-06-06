@@ -6,8 +6,10 @@ import com.github.coderodde.game.zerosum.HeuristicFunction;
 import com.github.coderodde.game.zerosum.PlayerType;
 
 /**
- *
- * @author rodio
+ * This class implements a heuristic function for the Connect Four game.
+ * 
+ * @version 1.0.0 (Jun 5, 2024)
+ * @since 1.0.0 (Jun 5, 2024)
  */
 public final class ConnectFourHeuristicFunction 
         implements HeuristicFunction<ConnectFourBoard> {

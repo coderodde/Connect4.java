@@ -3,8 +3,6 @@ package com.github.coderodde.game.zerosum.impl;
 import com.github.coderodde.game.zerosum.PlayerType;
 import com.github.coderodde.game.zerosum.GameState;
 import com.github.coderodde.game.zerosum.HeuristicFunction;
-import java.util.ArrayDeque;
-import java.util.Deque;
 import com.github.coderodde.game.zerosum.SearchEngine;
 
 /**

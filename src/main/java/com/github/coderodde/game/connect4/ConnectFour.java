@@ -7,7 +7,8 @@ import java.util.Scanner;
 import com.github.coderodde.game.zerosum.SearchEngine;
 
 /**
- *
+ * This class implements the REPL for playring Connect Four against an AI bot.
+ * 
  * @version 1.0.0 (Jun 5, 2024)
  * @since 1.0.0 (Jun 5, 2024)
  */
