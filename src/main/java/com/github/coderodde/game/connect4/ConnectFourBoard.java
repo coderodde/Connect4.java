@@ -18,7 +18,6 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
     static final int VICTORY_LENGTH = 4;
     
     final PlayerType[][] boardData = new PlayerType[ROWS][COLUMNS];
-    private final List<ConnectFourBoard> childrenTree = new ArrayList<>(COLUMNS);
     
     public ConnectFourBoard(final PlayerType[][] boardData) {
         for (int y = 0; y < ROWS; y++) {
@@ -52,18 +51,15 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
     
     @Override
     public List<ConnectFourBoard> expand(final PlayerType playerType) {
-        if (!childrenTree.isEmpty()) {
-            // Children are already computed, just return them:
-            return childrenTree;
-        }
+        final List<ConnectFourBoard> children = new ArrayList<>(COLUMNS);
         
         for (int x = 0; x < COLUMNS; x++) {
             if (notFullAtX(x)) {
-                childrenTree.add(dropAtX(x, playerType));
+                children.add(dropAtX(x, playerType));
             }
         }
         
-        return childrenTree;
+        return children;
     }
     
     @Override
