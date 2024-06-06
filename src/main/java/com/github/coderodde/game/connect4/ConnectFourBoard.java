@@ -144,7 +144,7 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
     
     private boolean isTerminalAscendingDiagonal(final PlayerType playerType) {
         int lastX = COLUMNS - VICTORY_LENGTH;
-        int lastY = VICTORY_LENGTH - 1;
+        int lastY = ROWS - VICTORY_LENGTH + 1;
         
         for (int y = ROWS - 1; y >= lastY; y--) {
             diagonalCheck:
@@ -164,7 +164,7 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
     
     private boolean isTerminalDescendingDiagonal(final PlayerType playerType) {
         int lastX = VICTORY_LENGTH - 1;
-        int lastY = ROWS - VICTORY_LENGTH;
+        int lastY = ROWS - VICTORY_LENGTH + 1;
         
         for (int y = ROWS - 1; y >= lastY; y--) {
             diagonalCheck:

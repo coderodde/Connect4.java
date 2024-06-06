@@ -79,7 +79,7 @@ public final class AlphaBetaPruningSearchEngine<S extends GameState<S>>
                                  final PlayerType playerType) {
         
         if (depth == 0 || state.isTerminal()) {
-            return heuristicFunction.evaluate(state);
+            return heuristicFunction.evaluate(state, depth);
         }
         
         if (playerType == PlayerType.MAXIMIZING_PLAYER) {

@@ -18,13 +18,13 @@ public final class ConnectFourHeuristicFunction
     private static final double MAXIMIZING_PLAYER_VICTORY_SCORE = +10E6;
 
     @Override
-    public double evaluate(ConnectFourBoard state) {
+    public double evaluate(final ConnectFourBoard state, final int depth) {
         if (state.isWinningFor(PlayerType.MINIMIZING_PLAYER)) {
-            return MINIMIZING_PLAYER_VICTORY_SCORE;
+            return MINIMIZING_PLAYER_VICTORY_SCORE + depth;
         }
         
         if (state.isWinningFor(PlayerType.MAXIMIZING_PLAYER)) {
-            return MAXIMIZING_PLAYER_VICTORY_SCORE;
+            return MAXIMIZING_PLAYER_VICTORY_SCORE - depth;
         }
         
         return evaluate2(state) + evaluate3(state);

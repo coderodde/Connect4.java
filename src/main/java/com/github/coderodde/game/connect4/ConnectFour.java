@@ -21,7 +21,7 @@ public class ConnectFour {
     public static void main(String[] args) {
         final int depth = parseDepth(args);
         
-        System.out.printf(">>> Requested search depth: %d.\n", depth);
+        System.out.printf(">>> Using search depth: %d.\n", depth);
         
         final Scanner scanner = new Scanner(System.in);
         final HeuristicFunction<ConnectFourBoard> heuristicFunction = 
@@ -99,6 +99,14 @@ public class ConnectFour {
         }
     }
     
+    /**
+     * Attempts to read the search depth from the {@code args}. If not present,
+     * returns the default depth.
+     * 
+     * @param args the array of command line arguments.
+     * 
+     * @return the search depth to use.
+     */
     private static int parseDepth(final String[] args) {
         if (args.length == 0) {
             return DEFAULT_DEPTH;
