@@ -15,9 +15,9 @@ import java.util.List;
  */
 public class ConnectFourBoard implements GameState<ConnectFourBoard> {
 
-    static final int ROWS = 6;
-    static final int COLUMNS = 7;
-    static final int VICTORY_LENGTH = 4;
+    public static final int ROWS = 6;
+    public static final int COLUMNS = 7;
+    public static final int VICTORY_LENGTH = 4;
     
     final PlayerType[][] boardData = new PlayerType[ROWS][COLUMNS];
     
@@ -96,7 +96,9 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
         return true;
     }
     
-    
+    public PlayerType get(final int x, final int y) {
+        return boardData[y][x];
+    }
     
     public ConnectFourBoard makePly(final int x, final PlayerType playerType) {
         return dropAtX(x, playerType);
