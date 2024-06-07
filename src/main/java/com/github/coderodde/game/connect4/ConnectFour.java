@@ -2,9 +2,9 @@ package com.github.coderodde.game.connect4;
 
 import com.github.coderodde.game.zerosum.HeuristicFunction;
 import com.github.coderodde.game.zerosum.PlayerType;
-import com.github.coderodde.game.zerosum.impl.AlphaBetaPruningSearchEngine;
 import java.util.Scanner;
 import com.github.coderodde.game.zerosum.SearchEngine;
+import com.github.coderodde.game.zerosum.impl.AlphaBetaPruningSearchEngine;
 
 /**
  * This class implements the REPL for playring Connect Four against an AI bot.
@@ -55,10 +55,9 @@ public class ConnectFour {
             if (0 < column && column <= ConnectFourBoard.COLUMNS) {
                 column--; // 1-based indexing to 0-based.
                 
-                currentBoard = 
-                        currentBoard.makePly(
-                                column,
-                                PlayerType.MINIMIZING_PLAYER);
+                currentBoard.makePly(
+                        column,
+                        PlayerType.MINIMIZING_PLAYER);
                 
                 long startTime = System.currentTimeMillis();
                 

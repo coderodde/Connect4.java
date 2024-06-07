@@ -22,9 +22,9 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
     
     final PlayerType[][] boardData = new PlayerType[ROWS][COLUMNS];
     
-    public ConnectFourBoard(final PlayerType[][] boardData) {
+    public ConnectFourBoard(final ConnectFourBoard other) {
         for (int y = 0; y < ROWS; y++) {
-            this.boardData[y] = Arrays.copyOf(boardData[y], COLUMNS);
+            this.boardData[y] = Arrays.copyOf(other.boardData[y], COLUMNS);
         }
     }
     
@@ -163,8 +163,24 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
         return boardData[y][x];
     }
     
-    public ConnectFourBoard makePly(final int x, final PlayerType playerType) {
-        return dropAtX(x, playerType);
+    public boolean makePly(final int x, final PlayerType playerType) {
+        for (int y = ROWS - 1; y >= 0; y--) {
+            if (boardData[y][x] == null) {
+                boardData[y][x] = playerType;
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    public void unmakePly(final int x) {
+        for (int y = 0; y < ROWS; y++) {
+            if (boardData[y][x] != null) {
+                boardData[y][x] = null;
+                return;
+            }
+        }
     }
     
     private boolean isTerminalHorizontal(final PlayerType playerType,
