@@ -2,6 +2,7 @@ package com.github.coderodde.game.connect4;
 
 import static com.github.coderodde.game.connect4.ConnectFourBoard.COLUMNS;
 import static com.github.coderodde.game.connect4.ConnectFourBoard.ROWS;
+import static com.github.coderodde.game.connect4.ConnectFourBoard.VICTORY_LENGTH;
 import com.github.coderodde.game.zerosum.PlayerType;
 import java.awt.Point;
 import java.util.List;
@@ -33,8 +34,133 @@ public class ConnectFourBoardTest {
     }
 
     @Test
-    public void testIsWinningFor() {
+    public void testIsWinningForHorizontal() {
+        ConnectFourBoard b = new ConnectFourBoard();
         
+        b.makePly(2, PlayerType.MINIMIZING_PLAYER);
+        b.makePly(3, PlayerType.MINIMIZING_PLAYER);
+        b.makePly(4, PlayerType.MINIMIZING_PLAYER);
+        b.makePly(5, PlayerType.MINIMIZING_PLAYER);
+        
+        assertTrue(b.hasHorizontalStrike(
+                PlayerType.MINIMIZING_PLAYER,
+                VICTORY_LENGTH));
+        
+        b.unmakePly(3);
+        
+        // X = 3 is missing:
+        assertFalse(b.hasHorizontalStrike(
+                PlayerType.MINIMIZING_PLAYER, 
+                VICTORY_LENGTH));
+        
+        b.makePly(3, PlayerType.MAXIMIZING_PLAYER);
+        
+        // X = 3 is another player type:
+        assertFalse(b.hasHorizontalStrike(
+                PlayerType.MINIMIZING_PLAYER, 
+                VICTORY_LENGTH));
+    }
+
+    @Test
+    public void testIsWinningForVertical() {
+        ConnectFourBoard b = new ConnectFourBoard();
+        
+        b.makePly(2, PlayerType.MINIMIZING_PLAYER);
+        b.makePly(2, PlayerType.MINIMIZING_PLAYER);
+        b.makePly(2, PlayerType.MINIMIZING_PLAYER);
+        b.makePly(2, PlayerType.MINIMIZING_PLAYER);
+        
+        assertTrue(b.hasVerticalStrike(
+                PlayerType.MINIMIZING_PLAYER,
+                VICTORY_LENGTH));
+        
+        b.unmakePly(2);
+        
+        // Y = 3 is missing:
+        assertFalse(b.hasVerticalStrike(
+                PlayerType.MINIMIZING_PLAYER, 
+                VICTORY_LENGTH));
+        
+        b.makePly(2, PlayerType.MAXIMIZING_PLAYER);
+        
+        // Y = 3 is another player type:
+        assertFalse(b.hasVerticalStrike(
+                PlayerType.MINIMIZING_PLAYER, 
+                VICTORY_LENGTH));
+    }
+
+    @Test
+    public void testIsWinningForAscending() {
+        ConnectFourBoard b = new ConnectFourBoard();
+        //        X
+        //       X0
+        //      XOX
+        //     XOOX
+        // Build bottom layer:
+        b.makePly(2, PlayerType.MINIMIZING_PLAYER);
+        b.makePly(3, PlayerType.MAXIMIZING_PLAYER);
+        b.makePly(4, PlayerType.MAXIMIZING_PLAYER);
+        b.makePly(5, PlayerType.MINIMIZING_PLAYER);
+        
+        // Third last layer:
+        b.makePly(3, PlayerType.MINIMIZING_PLAYER);
+        b.makePly(4, PlayerType.MAXIMIZING_PLAYER);
+        b.makePly(5, PlayerType.MINIMIZING_PLAYER);
+        
+        // Second last layer:
+        b.makePly(4, PlayerType.MINIMIZING_PLAYER);
+        b.makePly(5, PlayerType.MAXIMIZING_PLAYER);
+        
+        // Top layer:
+        b.makePly(5, PlayerType.MINIMIZING_PLAYER);
+        
+        assertTrue(b.hasAscendingDiagonalStrike(
+                PlayerType.MINIMIZING_PLAYER,
+                VICTORY_LENGTH));
+        
+        b.unmakePly(3);
+        
+        // X = 3 missing:
+        assertFalse(b.hasAscendingDiagonalStrike(
+                PlayerType.MINIMIZING_PLAYER, 
+                VICTORY_LENGTH));
+    }
+
+    @Test
+    public void testIsWinningForDescending() {
+        ConnectFourBoard b = new ConnectFourBoard();
+        //    X
+        //    OX
+        //    XOX
+        //    XOOX
+        // Build bottom layer:
+        b.makePly(2, PlayerType.MINIMIZING_PLAYER);
+        b.makePly(3, PlayerType.MAXIMIZING_PLAYER);
+        b.makePly(4, PlayerType.MAXIMIZING_PLAYER);
+        b.makePly(5, PlayerType.MINIMIZING_PLAYER);
+        
+        // Third last layer:
+        b.makePly(2, PlayerType.MINIMIZING_PLAYER);
+        b.makePly(3, PlayerType.MAXIMIZING_PLAYER);
+        b.makePly(4, PlayerType.MINIMIZING_PLAYER);
+        
+        // Second last layer:
+        b.makePly(2, PlayerType.MAXIMIZING_PLAYER);
+        b.makePly(3, PlayerType.MINIMIZING_PLAYER);
+        
+        // Top layer:
+        b.makePly(2, PlayerType.MINIMIZING_PLAYER);
+        
+        assertTrue(b.hasDescendingDiagonalStrike(
+                PlayerType.MINIMIZING_PLAYER,
+                VICTORY_LENGTH));
+        
+        b.unmakePly(3);
+        
+        // X = 3 missing:
+        assertFalse(b.hasDescendingDiagonalStrike(
+                PlayerType.MINIMIZING_PLAYER, 
+                VICTORY_LENGTH));
     }
     
     @Test

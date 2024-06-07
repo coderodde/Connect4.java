@@ -153,7 +153,9 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
         return boardData[y * COLUMNS + x];
     }
     
-    public void set(final int x, final int y, final PlayerType playerType) {
+    public void set(final int x,
+                    final int y,
+                    final PlayerType playerType) {
         boardData[y * COLUMNS + x] = playerType;
     }
     
@@ -204,7 +206,7 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
         for (int x = 0; x < COLUMNS; x++) {
             verticalCheck:
             for (int y = 0; y <= lastY; y++) {
-                for (int i = y; i < length; i++) {
+                for (int i = 0; i < length; i++) {
                     if (get(x, y + i) != playerType) {
                         continue verticalCheck;
                     }
@@ -223,7 +225,7 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
         final int lastX = COLUMNS - length;
         final int lastY = ROWS - length;
         
-        for (int y = 0; y <= lastY; y++) {
+        for (int y = ROWS - 1; y > lastY; y--) {
             diagonalCheck:
             for (int x = 0; x <= lastX; x++) {
                 for (int i = 0; i < length; i++) {
@@ -242,12 +244,12 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
     boolean hasDescendingDiagonalStrike(final PlayerType playerType, 
                                         final int length) {
         
-        final int lastX = COLUMNS - length;
+        final int firstX = COLUMNS - length;
         final int lastY = ROWS - length;
         
-        for (int y = 0; y <= lastY; y++) {
+        for (int y = ROWS - 1; y > lastY; y--) {
             diagonalCheck:
-            for (int x = 0; x <= lastX; x++) {
+            for (int x = firstX; x < COLUMNS; x++) {
                 for (int i = 0; i < length; i++) {
                     if (get(x - i, y - i) != playerType) {
                         continue diagonalCheck;
