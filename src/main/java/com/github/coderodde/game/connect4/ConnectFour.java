@@ -5,6 +5,7 @@ import com.github.coderodde.game.zerosum.PlayerType;
 import java.util.Scanner;
 import com.github.coderodde.game.zerosum.SearchEngine;
 import com.github.coderodde.game.zerosum.impl.AlphaBetaPruningSearchEngine;
+import com.github.coderodde.game.zerosum.impl.ConnectFourAlphaBetaPruningSearchEngine;
 
 /**
  * This class implements the REPL for playring Connect Four against an AI bot.
@@ -29,7 +30,7 @@ public class ConnectFour {
                 new ConnectFourHeuristicFunction();
         
         final SearchEngine<ConnectFourBoard> bot = 
-                new AlphaBetaPruningSearchEngine<>(heuristicFunction);
+                new ConnectFourAlphaBetaPruningSearchEngine(heuristicFunction);
         
         ConnectFourBoard currentBoard = new ConnectFourBoard();
         
