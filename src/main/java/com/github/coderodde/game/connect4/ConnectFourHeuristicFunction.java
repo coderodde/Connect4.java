@@ -51,15 +51,11 @@ public final class ConnectFourHeuristicFunction
         
         for (int y = 0; y < ROWS; y++) {
             for (int x = 0; x < COLUMNS - 1; x++) {
-                if (state.boardData[y][x] == PlayerType.MAXIMIZING_PLAYER &&
-                    state.boardData[y][x + 1] == PlayerType.MAXIMIZING_PLAYER) {
-                    
+                if (state.get(x, y) == PlayerType.MAXIMIZING_PLAYER &&
+                    state.get(x + 1, y) == PlayerType.MAXIMIZING_PLAYER) {
                     sum += TWO_BLOCKS_SCORE;
-                } else if (state.boardData[y][x] 
-                        == PlayerType.MINIMIZING_PLAYER
-                        &&
-                        state.boardData[y][x + 1] 
-                        == PlayerType.MINIMIZING_PLAYER) {
+                } else if (state.get(x, y) == PlayerType.MINIMIZING_PLAYER &&
+                       state.get(x + 1, y) == PlayerType.MINIMIZING_PLAYER) {
                     
                     sum -= TWO_BLOCKS_SCORE;
                 }
@@ -74,15 +70,12 @@ public final class ConnectFourHeuristicFunction
         
         for (int y = 0; y < ROWS - 1; y++) {
             for (int x = 0; x < COLUMNS; x++) {
-                if (state.boardData[y][x] == PlayerType.MAXIMIZING_PLAYER &&
-                    state.boardData[y + 1][x] == PlayerType.MAXIMIZING_PLAYER) {
+                if (state.get(x, y) == PlayerType.MAXIMIZING_PLAYER &&
+                    state.get(x, y + 1) == PlayerType.MAXIMIZING_PLAYER) {
                     
                     sum += TWO_BLOCKS_SCORE;
-                } else if (state.boardData[y][x] 
-                        == PlayerType.MINIMIZING_PLAYER
-                        &&
-                        state.boardData[y + 1][x] 
-                        == PlayerType.MINIMIZING_PLAYER) {
+                } else if (state.get(x, y) == PlayerType.MINIMIZING_PLAYER &&
+                        state.get(x, y + 1) == PlayerType.MINIMIZING_PLAYER) {
                     
                     sum -= TWO_BLOCKS_SCORE;
                 }
@@ -97,18 +90,13 @@ public final class ConnectFourHeuristicFunction
         
         for (int y = ROWS - 1; y > 0; y--) {
             for (int x = 0; x < COLUMNS - 1; x++) {
-                if (state.boardData[y][x] 
-                        == PlayerType.MAXIMIZING_PLAYER 
-                        &&
-                    state.boardData[y - 1][x + 1] 
-                        == PlayerType.MAXIMIZING_PLAYER) {
-                    
+                if (state.get(x, y) == PlayerType.MAXIMIZING_PLAYER &&
+                    state.get(x + 1, y - 1) == PlayerType.MAXIMIZING_PLAYER) {
                     sum += TWO_BLOCKS_SCORE;
-                } else if (state.boardData[y][x] 
+                } else if (state.get(x, y)
                         == PlayerType.MINIMIZING_PLAYER
                         &&
-                        state.boardData[y - 1][x + 1] 
-                        == PlayerType.MINIMIZING_PLAYER) {
+                        state.get(x + 1, y - 1) == PlayerType.MINIMIZING_PLAYER) {
                     
                     sum -= TWO_BLOCKS_SCORE;
                 }
@@ -123,17 +111,12 @@ public final class ConnectFourHeuristicFunction
         
         for (int y = ROWS - 1; y > 0; y--) {
             for (int x = 1; x < COLUMNS; x++) {
-                if (state.boardData[y][x] 
-                        == PlayerType.MAXIMIZING_PLAYER 
-                        &&
-                    state.boardData[y - 1][x - 1] 
-                        == PlayerType.MAXIMIZING_PLAYER) {
+                if (state.get(x, y) == PlayerType.MAXIMIZING_PLAYER &&
+                    state.get(x - 1, y - 1) == PlayerType.MAXIMIZING_PLAYER) {
                     
                     sum += TWO_BLOCKS_SCORE;
-                } else if (state.boardData[y][x] 
-                        == PlayerType.MINIMIZING_PLAYER
-                        &&
-                        state.boardData[y - 1][x - 1] 
+                } else if (state.get(x, y) == PlayerType.MINIMIZING_PLAYER &&
+                        state.get(x - 1, y - 1) 
                         == PlayerType.MINIMIZING_PLAYER) {
                     
                     sum -= TWO_BLOCKS_SCORE;
@@ -149,19 +132,14 @@ public final class ConnectFourHeuristicFunction
         
         for (int y = 0; y < ROWS; y++) {
             for (int x = 0; x < COLUMNS - 2; x++) {
-                if (state.boardData[y][x] == PlayerType.MAXIMIZING_PLAYER &&
-                    state.boardData[y][x + 1] == PlayerType.MAXIMIZING_PLAYER &&
-                    state.boardData[y][x + 2] == PlayerType.MAXIMIZING_PLAYER) {
+                if (state.get(x, y) == PlayerType.MAXIMIZING_PLAYER &&
+                    state.get(x + 1, y) == PlayerType.MAXIMIZING_PLAYER &&
+                    state.get(x + 2, y) == PlayerType.MAXIMIZING_PLAYER) {
                     
                     sum += THREE_BLOCKS_SCORE;
-                } else if (state.boardData[y][x] 
-                        == PlayerType.MINIMIZING_PLAYER
-                        &&
-                        state.boardData[y][x + 1] 
-                        == PlayerType.MINIMIZING_PLAYER
-                        &&
-                        state.boardData[y][x + 2]
-                        == PlayerType.MINIMIZING_PLAYER) {
+                } else if (state.get(x, y) == PlayerType.MINIMIZING_PLAYER &&
+                        state.get(x + 1, y) == PlayerType.MINIMIZING_PLAYER &&
+                        state.get(x + 2, y) == PlayerType.MINIMIZING_PLAYER) {
                     
                     sum -= THREE_BLOCKS_SCORE;
                 }
@@ -176,19 +154,14 @@ public final class ConnectFourHeuristicFunction
         
         for (int y = 0; y < ROWS - 2; y++) {
             for (int x = 0; x < COLUMNS; x++) {
-                if (state.boardData[y][x] == PlayerType.MAXIMIZING_PLAYER &&
-                    state.boardData[y + 1][x] == PlayerType.MAXIMIZING_PLAYER &&
-                    state.boardData[y + 2][x] == PlayerType.MAXIMIZING_PLAYER) {
+                if (state.get(x, y) == PlayerType.MAXIMIZING_PLAYER &&
+                    state.get(x, y + 1) == PlayerType.MAXIMIZING_PLAYER &&
+                    state.get(x, y + 2) == PlayerType.MAXIMIZING_PLAYER) {
                     
                     sum += THREE_BLOCKS_SCORE;
-                } else if (state.boardData[y][x] 
-                        == PlayerType.MINIMIZING_PLAYER
-                        &&
-                        state.boardData[y + 1][x] 
-                        == PlayerType.MINIMIZING_PLAYER
-                        &&
-                        state.boardData[y + 2][x] 
-                        == PlayerType.MINIMIZING_PLAYER) {
+                } else if (state.get(x, y) == PlayerType.MINIMIZING_PLAYER &&
+                        state.get(x, y + 1) == PlayerType.MINIMIZING_PLAYER &&
+                        state.get(x, y + 2) == PlayerType.MINIMIZING_PLAYER) {
                     
                     sum -= THREE_BLOCKS_SCORE;
                 }
@@ -203,24 +176,17 @@ public final class ConnectFourHeuristicFunction
         
         for (int y = ROWS - 1; y > 1; y--) {
             for (int x = 0; x < COLUMNS - 2; x++) {
-                if (state.boardData[y][x] 
-                        == PlayerType.MAXIMIZING_PLAYER 
-                        &&
-                    state.boardData[y - 1][x + 1] 
-                        == PlayerType.MAXIMIZING_PLAYER
-                        &&
-                    state.boardData[y - 2][x + 2] 
-                        == PlayerType.MAXIMIZING_PLAYER) {
+                if (state.get(x, y) == PlayerType.MAXIMIZING_PLAYER &&
+                    state.get(x + 1, y - 1) == PlayerType.MAXIMIZING_PLAYER &&
+                    state.get(x + 2, y - 2) == PlayerType.MAXIMIZING_PLAYER) {
                     
                     sum += THREE_BLOCKS_SCORE;
-                } else if (state.boardData[y][x] 
-                        == PlayerType.MINIMIZING_PLAYER
+                } else if (state.get(x, y) == PlayerType.MINIMIZING_PLAYER 
                         &&
-                        state.boardData[y - 1][x + 1] 
-                        == PlayerType.MINIMIZING_PLAYER
+                        state.get(x + 1, y - 1) == PlayerType.MINIMIZING_PLAYER 
                         && 
-                        state.boardData[y - 2][x + 2] 
-                        == PlayerType.MINIMIZING_PLAYER) {
+                        state.get(x + 2, y - 2) == 
+                        PlayerType.MINIMIZING_PLAYER) {
                     
                     sum -= THREE_BLOCKS_SCORE;
                 }
@@ -235,23 +201,15 @@ public final class ConnectFourHeuristicFunction
         
         for (int y = ROWS - 1; y > 1; y--) {
             for (int x = 2; x < COLUMNS; x++) {
-                if (state.boardData[y][x] 
-                        == PlayerType.MAXIMIZING_PLAYER 
-                        &&
-                    state.boardData[y - 1][x - 1] 
-                        == PlayerType.MAXIMIZING_PLAYER
-                        &&
-                    state.boardData[y - 2][x - 2] 
-                        == PlayerType.MAXIMIZING_PLAYER) {
+                if (state.get(x, y) == PlayerType.MAXIMIZING_PLAYER &&
+                    state.get(x - 1, y - 1) == PlayerType.MAXIMIZING_PLAYER &&
+                    state.get(x - 2, y - 2) == PlayerType.MAXIMIZING_PLAYER) {
                     
                     sum += THREE_BLOCKS_SCORE;
-                } else if (state.boardData[y][x] 
-                        == PlayerType.MINIMIZING_PLAYER
+                } else if (state.get(x, y) == PlayerType.MINIMIZING_PLAYER &&
+                        state.get(x - 1, y - 1) == PlayerType.MINIMIZING_PLAYER
                         &&
-                        state.boardData[y - 1][x - 1] 
-                        == PlayerType.MINIMIZING_PLAYER
-                        &&
-                        state.boardData[y - 2][x - 2]
+                        state.get(x - 2, y - 2) 
                         == PlayerType.MINIMIZING_PLAYER) {
                     
                     sum -= THREE_BLOCKS_SCORE;

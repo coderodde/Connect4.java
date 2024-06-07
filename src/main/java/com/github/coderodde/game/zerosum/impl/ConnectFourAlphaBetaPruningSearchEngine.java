@@ -5,6 +5,7 @@ import static com.github.coderodde.game.connect4.ConnectFourBoard.COLUMNS;
 import com.github.coderodde.game.zerosum.PlayerType;
 import com.github.coderodde.game.zerosum.HeuristicFunction;
 import com.github.coderodde.game.zerosum.SearchEngine;
+import javax.swing.JOptionPane;
 
 /**
  * This class implements the 
@@ -26,7 +27,8 @@ public final class ConnectFourAlphaBetaPruningSearchEngine
     }
     
     @Override
-    public ConnectFourBoard search(final ConnectFourBoard root, final int depth) {
+    public ConnectFourBoard search(final ConnectFourBoard root, 
+                                   final int depth) {
         bestMoveState = null;
         
         alphaBetaRootImpl(root, 
@@ -76,8 +78,12 @@ public final class ConnectFourAlphaBetaPruningSearchEngine
                                  double alpha,
                                  double beta,
                                  final PlayerType playerType) {
-        
-        if (depth == 0 || state.isTerminal()) {
+        boolean t = false;
+        if (depth == 0 || (t = state.isTerminal())) {
+            if (t) {
+                JOptionPane.showMessageDialog(null, "is terminal");
+            }
+            
             return heuristicFunction.evaluate(state, depth);
         }
         

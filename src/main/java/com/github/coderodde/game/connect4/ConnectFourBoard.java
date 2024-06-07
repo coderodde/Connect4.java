@@ -20,12 +20,10 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
     public static final int COLUMNS = 7;
     public static final int VICTORY_LENGTH = 4;
     
-    final PlayerType[][] boardData = new PlayerType[ROWS][COLUMNS];
+    final PlayerType[] boardData = new PlayerType[ROWS * COLUMNS];
     
     public ConnectFourBoard(final ConnectFourBoard other) {
-        for (int y = 0; y < ROWS; y++) {
-            this.boardData[y] = Arrays.copyOf(other.boardData[y], COLUMNS);
-        }
+        System.arraycopy(other.boardData, 0, boardData, 0, ROWS * COLUMNS);
     }
     
     public ConnectFourBoard() {
@@ -40,7 +38,7 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
             // Build the row:
             for (int x = 0; x < COLUMNS; x++) {
                 sb.append("|");
-                sb.append(getCellChar(boardData[y][x]));
+                sb.append(getCellChar(get(x, y)));
             }
             
             sb.append("|\n");
@@ -67,29 +65,16 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
     
     @Override
     public boolean isWinningFor(final PlayerType playerType) {
-        if (isTerminalHorizontal(playerType)) {
-            return true;
-        }
-        
-        if (isTerminalVertical(playerType)) {
-            return true;
-        }
-        
-        if (isTerminalAscendingDiagonal(playerType)) {
-            return true;
-        }
-        
-        if (isTerminalDescendingDiagonal(playerType)) {
-            return true;
-        }
-        
-        return false;
+        return hasAscendingDiagonalStrike(playerType, VICTORY_LENGTH) ||
+              hasDescendingDiagonalStrike(playerType, VICTORY_LENGTH) ||
+                      hasHorizontalStrike(playerType, VICTORY_LENGTH) ||
+                        hasVerticalStrike(playerType, VICTORY_LENGTH);
     }
     
     @Override
     public boolean isTie() {
         for (int x = 0; x < COLUMNS; x++) {
-            if (boardData[0][x] == null) {
+            if (get(x, 0) == null) {
                 return false;
             }
         }
@@ -103,70 +88,79 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
             return null;
         }
         
-        List<Point> winningPattern = new ArrayList<>(VICTORY_LENGTH);
+        // Check whether the minimizing/human player has a winning pattern:
+        List<Point> winningPattern =
+                tryLoadAscendingWinningPattern(PlayerType.MINIMIZING_PLAYER);
         
-        if (isTerminalAscendingDiagonal(
-                PlayerType.MINIMIZING_PLAYER, 
-                winningPattern)) {
-            
+        if (winningPattern != null) {
             return winningPattern;
         }
         
-        if (isTerminalDescendingDiagonal(
-                PlayerType.MINIMIZING_PLAYER,
-                winningPattern)) {
-            
+        winningPattern = 
+                tryLoadDescendingWinningPattern(PlayerType.MINIMIZING_PLAYER);
+        
+        if (winningPattern != null) {
             return winningPattern;
         }
         
-        if (isTerminalHorizontal(
-                PlayerType.MINIMIZING_PLAYER, 
-                winningPattern)) {
-            
+        winningPattern = 
+                tryLoadHorizontalWinningPattern(PlayerType.MINIMIZING_PLAYER);
+        
+        if (winningPattern != null) {
             return winningPattern;
         }
         
-        if (isTerminalVertical(PlayerType.MINIMIZING_PLAYER, winningPattern)) {
+        winningPattern = 
+                tryLoadVerticalWinningPattern(PlayerType.MINIMIZING_PLAYER);
+        
+        if (winningPattern != null) {
             return winningPattern;
         }
         
-        if (isTerminalAscendingDiagonal(
-                PlayerType.MAXIMIZING_PLAYER, 
-                winningPattern)) {
-            
+        // Check whether the maximizing/CPU player has a winning pattern:
+        winningPattern =
+                tryLoadAscendingWinningPattern(PlayerType.MAXIMIZING_PLAYER);
+        
+        if (winningPattern != null) {
             return winningPattern;
         }
         
-        if (isTerminalDescendingDiagonal(
-                PlayerType.MAXIMIZING_PLAYER,
-                winningPattern)) {
-            
+        winningPattern = 
+                tryLoadDescendingWinningPattern(PlayerType.MAXIMIZING_PLAYER);
+        
+        if (winningPattern != null) {
             return winningPattern;
         }
         
-        if (isTerminalHorizontal(
-                PlayerType.MAXIMIZING_PLAYER, 
-                winningPattern)) {
-            
+        winningPattern = 
+                tryLoadHorizontalWinningPattern(PlayerType.MAXIMIZING_PLAYER);
+        
+        if (winningPattern != null) {
             return winningPattern;
         }
         
-        if (isTerminalVertical(PlayerType.MAXIMIZING_PLAYER, winningPattern)) {
+        winningPattern = 
+                tryLoadVerticalWinningPattern(PlayerType.MAXIMIZING_PLAYER);
         
+        if (winningPattern != null) {
             return winningPattern;
         }
         
-        return winningPattern.isEmpty() ? null : winningPattern;
+        throw new IllegalStateException("Should not get here.");
     }
     
     public PlayerType get(final int x, final int y) {
-        return boardData[y][x];
+        return boardData[y * COLUMNS + x];
+    }
+    
+    public void set(final int x, final int y, final PlayerType playerType) {
+        boardData[y * COLUMNS + x] = playerType;
     }
     
     public boolean makePly(final int x, final PlayerType playerType) {
         for (int y = ROWS - 1; y >= 0; y--) {
-            if (boardData[y][x] == null) {
-                boardData[y][x] = playerType;
+            if (get(x, y) == null) {
+                set(x, y, playerType);
                 return true;
             }
         }
@@ -176,25 +170,22 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
     
     public void unmakePly(final int x) {
         for (int y = 0; y < ROWS; y++) {
-            if (boardData[y][x] != null) {
-                boardData[y][x] = null;
+            if (get(x, y) != null) {
+                set(x, y, null);
                 return;
             }
         }
     }
     
-    private boolean isTerminalHorizontal(final PlayerType playerType,
-                                         final List<Point> winningPattern) {
-        int lastX = COLUMNS - VICTORY_LENGTH;
+    boolean hasHorizontalStrike(final PlayerType playerType, final int length) {
+        
+        final int lastX = COLUMNS - length;
         
         for (int y = ROWS - 1; y >= 0; y--) {
             horizontalCheck:
             for (int x = 0; x <= lastX; x++) {
-                for (int i = x; i < x + VICTORY_LENGTH; i++) {
-                    winningPattern.add(new Point(i, y));
-                    
-                    if (boardData[y][i] != playerType) {
-                        winningPattern.clear();
+                for (int i = 0; i < length; i++) {
+                    if (get(x + i, y) != playerType) {
                         continue horizontalCheck;
                     }
                 }
@@ -206,19 +197,15 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
         return false;
     }
     
-    private boolean isTerminalVertical(final PlayerType playerType,
-                                       final List<Point> winningPattern) {
+    boolean hasVerticalStrike(final PlayerType playerType, final int length) {
         
-        int lastY = ROWS - VICTORY_LENGTH;
+        int lastY = ROWS - length;
         
         for (int x = 0; x < COLUMNS; x++) {
             verticalCheck:
             for (int y = 0; y <= lastY; y++) {
-                for (int i = y; i < y + VICTORY_LENGTH; i++) {
-                    winningPattern.add(new Point(x, i));
-                            
-                    if (boardData[i][x] != playerType) {
-                        winningPattern.clear();
+                for (int i = y; i < length; i++) {
+                    if (get(x, y + i) != playerType) {
                         continue verticalCheck;
                     }
                 }
@@ -230,150 +217,171 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
         return false;
     }
     
-    private boolean isTerminalAscendingDiagonal(
-            final PlayerType playerType,
-            final List<Point> winningPattern) {
+    boolean hasAscendingDiagonalStrike(final PlayerType playerType, 
+                                       final int length) {
         
-        int lastX = COLUMNS - VICTORY_LENGTH;
-        int lastY = ROWS - VICTORY_LENGTH + 1;
+        final int lastX = COLUMNS - length;
+        final int lastY = ROWS - length;
+        
+        for (int y = 0; y <= lastY; y++) {
+            diagonalCheck:
+            for (int x = 0; x <= lastX; x++) {
+                for (int i = 0; i < length; i++) {
+                    if (get(x + i, y - i) != playerType) {
+                        continue diagonalCheck;
+                    }
+                }
+                
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    boolean hasDescendingDiagonalStrike(final PlayerType playerType, 
+                                        final int length) {
+        
+        final int lastX = COLUMNS - length;
+        final int lastY = ROWS - length;
+        
+        for (int y = 0; y <= lastY; y++) {
+            diagonalCheck:
+            for (int x = 0; x <= lastX; x++) {
+                for (int i = 0; i < length; i++) {
+                    if (get(x - i, y - i) != playerType) {
+                        continue diagonalCheck;
+                    }
+                }
+                
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    private List<Point> tryLoadAscendingWinningPattern(
+            final PlayerType playerType) {
+        
+        final int lastX = COLUMNS - VICTORY_LENGTH;
+        final int lastY = ROWS - VICTORY_LENGTH;
+        final List<Point> winningPattern = new ArrayList<>(VICTORY_LENGTH);
         
         for (int y = ROWS - 1; y >= lastY; y--) {
             diagonalCheck:
             for (int x = 0; x <= lastX; x++) {
                 for (int i = 0; i < VICTORY_LENGTH; i++) {
-                    winningPattern.add(new Point(x + i, y - 1));
-                    
-                    if (boardData[y - i][x + i] != playerType) {
+                    if (get(x + i, y - i) == playerType) {
+                        winningPattern.add(new Point(x + i, y - i));
+                        
+                        if (winningPattern.size() == VICTORY_LENGTH) {
+                            return winningPattern;
+                        }
+                    } else {
                         winningPattern.clear();
                         continue diagonalCheck;
                     }
                 }
-                
-                return true;
             }
         }
         
-        return false;
+        return null;
     }
     
-    private boolean isTerminalDescendingDiagonal(
-            final PlayerType playerType,
-            final List<Point> winningPattern) {
+    private List<Point> tryLoadDescendingWinningPattern(
+            final PlayerType playerType) {
         
-        int lastX = VICTORY_LENGTH - 1;
-        int lastY = ROWS - VICTORY_LENGTH + 1;
+        final int firstX = COLUMNS - VICTORY_LENGTH;
+        final int lastY = ROWS - VICTORY_LENGTH;
+        final List<Point> winningPattern = new ArrayList<>(VICTORY_LENGTH);
         
         for (int y = ROWS - 1; y >= lastY; y--) {
             diagonalCheck:
-            for (int x = lastX; x < COLUMNS; x++) {
+            for (int x = firstX; x >= 0; x--) {
                 for (int i = 0; i < VICTORY_LENGTH; i++) {
-                    winningPattern.add(new Point(x - i, y - i));
-                    
-                    if (boardData[y - i][x - i] != playerType) {
+                    if (get(x - i, y - i) == playerType) {
+                        winningPattern.add(new Point(x - i, y - i));
+                        
+                        if (winningPattern.size() == VICTORY_LENGTH) {
+                            return winningPattern;
+                        }
+                    } else {
                         winningPattern.clear();
                         continue diagonalCheck;
                     }
                 }
-                
-                return true;
             }
         }
         
-        return false;
+        return null;
     }
     
-    private boolean isTerminalHorizontal(final PlayerType playerType) {
-        int lastX = COLUMNS - VICTORY_LENGTH;
+    private List<Point> tryLoadHorizontalWinningPattern(
+            final PlayerType playerType) {
+        
+        final int lastX = COLUMNS - VICTORY_LENGTH;
+        final List<Point> winningPattern = new ArrayList<>(VICTORY_LENGTH);
         
         for (int y = ROWS - 1; y >= 0; y--) {
             horizontalCheck:
             for (int x = 0; x <= lastX; x++) {
-                for (int i = x; i < x + VICTORY_LENGTH; i++) {
-                    if (boardData[y][i] != playerType) {
+                for (int i = 0; i < VICTORY_LENGTH; i++) {
+                    if (get(x + i, y) == playerType) {
+                        winningPattern.add(new Point(x + i, y));
+                        
+                        if (winningPattern.size() == VICTORY_LENGTH) {
+                            return winningPattern;
+                        }
+                    } else {
+                        winningPattern.clear();
                         continue horizontalCheck;
                     }
                 }
-                
-                return true;
             }
         }
         
-        return false;
+        return null;
     }
     
-    private boolean isTerminalVertical(final PlayerType playerType) {
-        int lastY = ROWS - VICTORY_LENGTH;
+    private List<Point> tryLoadVerticalWinningPattern(
+            final PlayerType playerType) {
+        
+        final int lastY = ROWS - VICTORY_LENGTH;
+        final List<Point> winningPattern = new ArrayList<>(VICTORY_LENGTH);
         
         for (int x = 0; x < COLUMNS; x++) {
             verticalCheck:
             for (int y = 0; y <= lastY; y++) {
-                for (int i = y; i < y + VICTORY_LENGTH; i++) {
-                    if (boardData[i][x] != playerType) {
+                for (int i = 0; i < VICTORY_LENGTH; i++) {
+                    if (get(x, y + i) == playerType) {
+                        winningPattern.add(new Point(x, y + i));
+                        
+                        if (winningPattern.size() == VICTORY_LENGTH) {
+                            return winningPattern;
+                        }
+                    } else {
+                        winningPattern.clear();
                         continue verticalCheck;
                     }
                 }
-                
-                return true;
             }
         }
         
-        return false;
+        return null;
     }
     
-    private boolean isTerminalAscendingDiagonal(final PlayerType playerType) {
-        int lastX = COLUMNS - VICTORY_LENGTH;
-        int lastY = ROWS - VICTORY_LENGTH + 1;
-        
-        for (int y = ROWS - 1; y >= lastY; y--) {
-            diagonalCheck:
-            for (int x = 0; x <= lastX; x++) {
-                for (int i = 0; i < VICTORY_LENGTH; i++) {
-                    if (boardData[y - i][x + i] != playerType) {
-                        continue diagonalCheck;
-                    }
-                }
-                
-                return true;
-            }
-        }
-        
-        return false;
-    }
-    
-    private boolean isTerminalDescendingDiagonal(final PlayerType playerType) {
-        int lastX = VICTORY_LENGTH - 1;
-        int lastY = ROWS - VICTORY_LENGTH + 1;
-        
-        for (int y = ROWS - 1; y >= lastY; y--) {
-            diagonalCheck:
-            for (int x = lastX; x < COLUMNS; x++) {
-                for (int i = 0; i < VICTORY_LENGTH; i++) {
-                    if (boardData[y - i][x - i] != playerType) {
-                        continue diagonalCheck;
-                    }
-                }
-                
-                return true;
-            }
-        }
-        
-        return false;
-    }
     
     private boolean notFullAtX(final int x) {
-        return boardData[0][x] == null;
+        return get(x, 0) == null;
     }
     
     private ConnectFourBoard dropAtX(final int x, final PlayerType playerType) {
-        final ConnectFourBoard nextBoard = new ConnectFourBoard();
-        
-        for (int y = 0; y < ROWS; y++) {
-            nextBoard.boardData[y] = Arrays.copyOf(this.boardData[y], COLUMNS);
-        }
+        final ConnectFourBoard nextBoard = new ConnectFourBoard(this);
         
         for (int y = ROWS - 1; y >= 0; y--) {
-            if (nextBoard.boardData[y][x] == null) {
-                nextBoard.boardData[y][x] = playerType;
+            if (nextBoard.get(x, y) == null) {
+                nextBoard.set(x, y, playerType);
                 return nextBoard;
             }
         }
@@ -396,5 +404,21 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
             default:
                 throw new IllegalStateException("Should not get here.");
         }
+    }
+    
+    private int nextXIndex(final int x, final int y) {
+        return y * COLUMNS + x + 1;
+    }
+    
+    private int nextYIndex(final int x, final int y) {
+        return y * (COLUMNS + 1) + x;
+    }
+    
+    private int nextAscendingDiagonalIndex(final int x, final int y) {
+        return y * (COLUMNS - 1) + x - 1;
+    }
+    
+    private int nextDescendingDiagonalIndex(final int x, final int y) {
+        return y * (COLUMNS - 1) - x + 1;
     }
 }
