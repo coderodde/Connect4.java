@@ -22,11 +22,11 @@ public final class ConnectFourHeuristicFunction
     @Override
     public double evaluate(final ConnectFourBoard state, final int depth) {
         if (state.isWinningFor(PlayerType.MINIMIZING_PLAYER)) {
-            return MINIMIZING_PLAYER_VICTORY_SCORE + depth;
+            return MINIMIZING_PLAYER_VICTORY_SCORE - depth;
         }
         
         if (state.isWinningFor(PlayerType.MAXIMIZING_PLAYER)) {
-            return MAXIMIZING_PLAYER_VICTORY_SCORE - depth;
+            return MAXIMIZING_PLAYER_VICTORY_SCORE + depth;
         }
         
         return evaluate2(state) + evaluate3(state);

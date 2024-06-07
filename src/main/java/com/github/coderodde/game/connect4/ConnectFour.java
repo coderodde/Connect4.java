@@ -29,10 +29,7 @@ public class ConnectFour {
                 new ConnectFourHeuristicFunction();
         
         final SearchEngine<ConnectFourBoard> bot = 
-                new AlphaBetaPruningSearchEngine<>(
-                        heuristicFunction, 
-                        MINIMUM_PLAYER_VICTORY_SCORE, 
-                        MAXIMUM_PLAYER_VICTORY_SCORE);
+                new AlphaBetaPruningSearchEngine<>(heuristicFunction);
         
         ConnectFourBoard currentBoard = new ConnectFourBoard();
         

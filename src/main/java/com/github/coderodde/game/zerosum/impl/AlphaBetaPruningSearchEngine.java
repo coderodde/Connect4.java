@@ -22,10 +22,7 @@ public final class AlphaBetaPruningSearchEngine<S extends GameState<S>>
     private final HeuristicFunction<S> heuristicFunction;
     
     public AlphaBetaPruningSearchEngine(
-            final HeuristicFunction<S> heuristicFunction,
-            final double minimizingPlayerVictoryScore,
-            final double maximizingPlayerVictoryScore) {
-        
+            final HeuristicFunction<S> heuristicFunction) {
         this.heuristicFunction = heuristicFunction;
     }
     
