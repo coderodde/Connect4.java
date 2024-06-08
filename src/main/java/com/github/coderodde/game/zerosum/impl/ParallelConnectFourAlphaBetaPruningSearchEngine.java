@@ -27,7 +27,7 @@ implements SearchEngine<ConnectFourBoard> {
     private final int seedDepth;
     
     public ParallelConnectFourAlphaBetaPruningSearchEngine(
-            final ConnectFourHeuristicFunction heuristicFunction,
+            final HeuristicFunction<ConnectFourBoard> heuristicFunction,
             final int seedDepth) {
         
         this.heuristicFunction = heuristicFunction;
@@ -86,7 +86,47 @@ implements SearchEngine<ConnectFourBoard> {
         final Map<ConnectFourBoard, Double> globalScoreMap = 
                 getGlobalScoreMap(searchThreadList);
         
-        return null;
+        final SeedHeuristicFunction seedHeuristicFunction = 
+                new SeedHeuristicFunction(globalScoreMap);
+        
+        return alphaBetaImplRoot(root, 
+                                 seedHeuristicFunction,
+                                 seedDepth);
+    }
+    
+    private static ConnectFourBoard 
+        alphaBetaImplRoot(
+                final ConnectFourBoard root,
+                final HeuristicFunction<ConnectFourBoard> heuristicFunction,
+                final int seedDepth) {
+        
+        double tentativeValue = Double.NEGATIVE_INFINITY;
+        double alpha = Double.NEGATIVE_INFINITY;
+        
+        ConnectFourBoard bestMoveState = null;
+        
+        for (int x = 0; x < COLUMNS; x++) {
+            if (!root.makePly(x, PlayerType.MAXIMIZING_PLAYER)) {
+                continue;
+            }
+            
+            double value = alphaBetaImpl(root,
+                                         seedDepth - 1,
+                                         Double.NEGATIVE_INFINITY,
+                                         Double.POSITIVE_INFINITY,
+                                         PlayerType.MINIMIZING_PLAYER,
+                                         heuristicFunction);
+            
+            if (tentativeValue < value) {
+                tentativeValue = value;
+                bestMoveState = new ConnectFourBoard(root);
+            }
+            
+            root.unmakePly(x);
+            alpha = Math.max(alpha, value);
+        }
+        
+        return bestMoveState;
     }
     
     private static Map<ConnectFourBoard, Double>
@@ -115,7 +155,7 @@ implements SearchEngine<ConnectFourBoard> {
         for (int i = 0; i < threadCount; i++) {
             
             final List<ConnectFourBoard> bucket = 
-                    new ArrayList<>(basicNumberOfSeedsPerBucket);
+                    new ArrayList<>(basicNumberOfSeedsPerBucket + 1);
             
             for (int j = 0; j < basicNumberOfSeedsPerBucket; j++, index++) {
                 bucket.add(seedStates.get(index));
@@ -155,6 +195,21 @@ implements SearchEngine<ConnectFourBoard> {
         }
         
         return levelA;
+    }
+    
+    private static final class SeedHeuristicFunction
+            implements HeuristicFunction<ConnectFourBoard> {
+
+        private final Map<ConnectFourBoard, Double> scoreMap;
+        
+        SeedHeuristicFunction(final Map<ConnectFourBoard, Double> scoreMap) {
+            this.scoreMap = scoreMap;
+        }
+        
+        @Override
+        public double evaluate(ConnectFourBoard state, int depth) {
+            return scoreMap.get(state);
+        }
     }
     
     private static final class SearchThread extends Thread {

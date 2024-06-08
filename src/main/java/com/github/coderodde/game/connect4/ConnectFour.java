@@ -6,6 +6,7 @@ import java.util.Scanner;
 import com.github.coderodde.game.zerosum.SearchEngine;
 import com.github.coderodde.game.zerosum.impl.AlphaBetaPruningSearchEngine;
 import com.github.coderodde.game.zerosum.impl.ConnectFourAlphaBetaPruningSearchEngine;
+import com.github.coderodde.game.zerosum.impl.ParallelConnectFourAlphaBetaPruningSearchEngine;
 
 /**
  * This class implements the REPL for playring Connect Four against an AI bot.
@@ -14,9 +15,7 @@ import com.github.coderodde.game.zerosum.impl.ConnectFourAlphaBetaPruningSearchE
  * @since 1.0.0 (Jun 5, 2024)
  */
 public class ConnectFour {
-    
-    private static final double MINIMUM_PLAYER_VICTORY_SCORE = +1E6;
-    private static final double MAXIMUM_PLAYER_VICTORY_SCORE = -1E6;
+   
     private static final int DEFAULT_DEPTH = 8;
     private static final int MINIMUM_DEPTH = 1;
 
@@ -30,7 +29,9 @@ public class ConnectFour {
                 new ConnectFourHeuristicFunction();
         
         final SearchEngine<ConnectFourBoard> bot = 
-                new AlphaBetaPruningSearchEngine<>(heuristicFunction);
+                new ParallelConnectFourAlphaBetaPruningSearchEngine(
+                        heuristicFunction, 
+                        2);
         
         ConnectFourBoard currentBoard = new ConnectFourBoard();
         
