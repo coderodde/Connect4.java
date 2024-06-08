@@ -5,7 +5,6 @@ import static com.github.coderodde.game.connect4.ConnectFourBoard.COLUMNS;
 import com.github.coderodde.game.zerosum.PlayerType;
 import com.github.coderodde.game.zerosum.HeuristicFunction;
 import com.github.coderodde.game.zerosum.SearchEngine;
-import javax.swing.JOptionPane;
 
 /**
  * This class implements the 
