@@ -78,12 +78,8 @@ public final class ConnectFourAlphaBetaPruningSearchEngine
                                  double alpha,
                                  double beta,
                                  final PlayerType playerType) {
-        boolean t = false;
-        if (depth == 0 || (t = state.isTerminal())) {
-            if (t) {
-                JOptionPane.showMessageDialog(null, "is terminal");
-            }
-            
+
+        if (depth == 0 || state.isTerminal()) {
             return heuristicFunction.evaluate(state, depth);
         }
         

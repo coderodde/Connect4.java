@@ -270,7 +270,7 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
         final int lastY = ROWS - VICTORY_LENGTH;
         final List<Point> winningPattern = new ArrayList<>(VICTORY_LENGTH);
         
-        for (int y = ROWS - 1; y >= lastY; y--) {
+        for (int y = ROWS - 1; y > lastY; y--) {
             diagonalCheck:
             for (int x = 0; x <= lastX; x++) {
                 for (int i = 0; i < VICTORY_LENGTH; i++) {
@@ -298,7 +298,7 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
         final int lastY = ROWS - VICTORY_LENGTH;
         final List<Point> winningPattern = new ArrayList<>(VICTORY_LENGTH);
         
-        for (int y = ROWS - 1; y >= lastY; y--) {
+        for (int y = ROWS - 1; y > lastY; y--) {
             diagonalCheck:
             for (int x = firstX; x >= 0; x--) {
                 for (int i = 0; i < VICTORY_LENGTH; i++) {
