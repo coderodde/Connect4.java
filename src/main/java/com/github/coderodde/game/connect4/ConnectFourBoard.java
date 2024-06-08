@@ -300,7 +300,7 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
         
         for (int y = ROWS - 1; y > lastY; y--) {
             diagonalCheck:
-            for (int x = firstX; x >= 0; x--) {
+            for (int x = firstX; x < COLUMNS; x++) {
                 for (int i = 0; i < VICTORY_LENGTH; i++) {
                     if (get(x - i, y - i) == playerType) {
                         winningPattern.add(new Point(x - i, y - i));

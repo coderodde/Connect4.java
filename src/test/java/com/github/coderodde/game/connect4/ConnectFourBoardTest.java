@@ -304,6 +304,49 @@ public final class ConnectFourBoardTest {
     }
     
     @Test
+    public void debug1() {
+        ConnectFourBoard b = new ConnectFourBoard();
+        
+        // .......
+        // ...X...
+        // ..XOX..
+        // ..OOOX.
+        // ..OXXO.
+        // ..OXXXO
+        
+        // Column 2:
+        b.makePly(2, PlayerType.MAXIMIZING_PLAYER);
+        b.makePly(2, PlayerType.MAXIMIZING_PLAYER);
+        b.makePly(2, PlayerType.MAXIMIZING_PLAYER);
+        b.makePly(2, PlayerType.MINIMIZING_PLAYER);
+        
+        // Column 3:
+        b.makePly(3, PlayerType.MINIMIZING_PLAYER);
+        b.makePly(3, PlayerType.MINIMIZING_PLAYER);
+        b.makePly(3, PlayerType.MAXIMIZING_PLAYER);
+        b.makePly(3, PlayerType.MAXIMIZING_PLAYER);
+        b.makePly(3, PlayerType.MINIMIZING_PLAYER);
+        
+        // Column 4:
+        b.makePly(4, PlayerType.MINIMIZING_PLAYER);
+        b.makePly(4, PlayerType.MINIMIZING_PLAYER);
+        b.makePly(4, PlayerType.MAXIMIZING_PLAYER);
+        b.makePly(4, PlayerType.MINIMIZING_PLAYER);
+        
+        // Column 5:
+        b.makePly(5, PlayerType.MINIMIZING_PLAYER);
+        b.makePly(5, PlayerType.MAXIMIZING_PLAYER);
+        b.makePly(5, PlayerType.MINIMIZING_PLAYER);
+        
+        // Column 6:
+        b.makePly(6, PlayerType.MAXIMIZING_PLAYER);
+        
+        final List<Point> winningPattern = b.getWinningPattern();
+        
+        System.out.println(winningPattern.size());
+    }
+    
+    @Test
     public void testMakeUnmakePly() {
         ConnectFourBoard b = new ConnectFourBoard();
         
