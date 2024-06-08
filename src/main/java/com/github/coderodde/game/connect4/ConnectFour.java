@@ -30,7 +30,7 @@ public class ConnectFour {
                 new ConnectFourHeuristicFunction();
         
         final SearchEngine<ConnectFourBoard> bot = 
-                new ConnectFourAlphaBetaPruningSearchEngine(heuristicFunction);
+                new AlphaBetaPruningSearchEngine<>(heuristicFunction);
         
         ConnectFourBoard currentBoard = new ConnectFourBoard();
         

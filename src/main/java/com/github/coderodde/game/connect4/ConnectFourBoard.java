@@ -373,7 +373,6 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
         return null;
     }
     
-    
     private boolean notFullAtX(final int x) {
         return get(x, 0) == null;
     }
