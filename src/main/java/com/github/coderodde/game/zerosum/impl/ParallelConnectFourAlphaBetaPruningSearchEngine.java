@@ -90,7 +90,7 @@ implements SearchEngine<ConnectFourBoard> {
         final List<List<ConnectFourBoard>> threadLoads = 
                 bucketizeSeedStates(seedStates, 
                                     Runtime.getRuntime().availableProcessors());
-        
+        System.out.println("hello");
         // Create the list of search threads:
         final List<SearchThread> searchThreadList = 
                 new ArrayList<>(threadLoads.size());
@@ -538,89 +538,90 @@ implements SearchEngine<ConnectFourBoard> {
         }
     }
     
-    /**
-     * Implements the actual game search via Alpha-beta pruning.
-     * 
-     * @param root              the root node of the search subtree.
-     * @param depth             the depth to search the game tree.
-     * @param alpha             the alpha value.
-     * @param beta              the beta value.
-     * @param playerType        the player type for the state {@code root}.
-     * @param seedStateHeuristicFunction the heuristic function.
-     * 
-     * @return the value of the state {@code root}.
-     */
-    private double
-         alphaBetaImpl(
-                 final ConnectFourBoard root,
-                 final int depth, 
-                 double alpha,
-                 double beta,
-                 final PlayerType playerType,
-                 final SeedStateHeuristicFunction seedStateHeuristicFunction) {
-
-            if (depth - seedDepth == 0) { 
-                // 0 is ignored.
-                return seedStateHeuristicFunction.evaluate(root, 0);
-            }
-
-            if (root.isTerminal()) {
-                return heuristicFunction.evaluate(root, depth);
-            }
-
-            if (playerType == PlayerType.MAXIMIZING_PLAYER) {
-                double value = Double.NEGATIVE_INFINITY;
-
-                for (int x = 0; x < COLUMNS; x++) {
-                    if (!root.makePly(x, PlayerType.MAXIMIZING_PLAYER)) {
-                        continue;
-                    }
-
-                    value = Math.max(value, 
-                                     alphaBetaImpl(root,
-                                                   depth - 1,
-                                                   alpha,
-                                                   beta,
-                                                   PlayerType.MINIMIZING_PLAYER,
-                                                   seedStateHeuristicFunction));
-
-                    root.unmakePly(x);
-
-                    if (value > beta) {
-                        break;
-                    }
-
-                    alpha = Math.max(alpha, value);
-                }   
-
-                return value;
-            } else {
-                double value = Double.POSITIVE_INFINITY;
-
-                for (int x = 0; x < COLUMNS; x++) {
-                    if (!root.makePly(x, PlayerType.MINIMIZING_PLAYER)) {
-                        continue;
-                    }
-
-                    value = Math.min(value,
-                                     alphaBetaImpl(root,
-                                                   depth - 1,
-                                                   alpha,
-                                                   beta,
-                                                   PlayerType.MAXIMIZING_PLAYER,
-                                                   seedStateHeuristicFunction));
-
-                    root.unmakePly(x);
-
-                    if (value < alpha) {
-                        break;
-                    }
-
-                    beta = Math.min(beta, value);
-                }
-
-                return value;
-            }          
-        }
+//    /**
+//     * Implements the actual game search via Alpha-beta pruning.
+//     * 
+//     * @param root              the root node of the search subtree.
+//     * @param depth             the depth to search the game tree.
+//     * @param alpha             the alpha value.
+//     * @param beta              the beta value.
+//     * @param playerType        the player type for the state {@code root}.
+//     * @param seedStateHeuristicFunction the heuristic function.
+//     * 
+//     * @return the value of the state {@code root}.
+//     */
+//    private double
+//         alphaBetaImpl(
+//                 final ConnectFourBoard root,
+//                 final int depth, 
+//                 double alpha,
+//                 double beta,
+//                 final PlayerType playerType,
+//                 final SeedStateHeuristicFunction seedStateHeuristicFunction) {
+//
+//            if (depth - seedDepth == 0) { 
+//                // 0 is ignored.
+//                return seedStateHeuristicFunction.evaluate(root, 0);
+//            }
+//
+//            if (root.isTerminal()) {
+//                return heuristicFunction.evaluate(root, depth);
+//            }
+//
+//            if (playerType == PlayerType.MAXIMIZING_PLAYER) {
+//                double value = Double.NEGATIVE_INFINITY;
+//
+//                for (int x = 0; x < COLUMNS; x++) {
+//                    if (!root.makePly(x, PlayerType.MAXIMIZING_PLAYER)) {
+//                        continue;
+//                    }
+//
+//                    value = Math.max(value, 
+//                                     alphaBetaImpl(root,
+//                                                   depth - 1,
+//                                                   alpha,
+//                                                   beta,
+//                                                   PlayerType.MINIMIZING_PLAYER,
+//                                                   seedStateHeuristicFunction));
+//
+//                    root.unmakePly(x);
+//
+//                    if (value > beta) {
+//                        break;
+//                    }
+//
+//                    alpha = Math.max(alpha, value);
+//                }   
+//
+//                return value;
+//            } else {
+//                double value = Double.POSITIVE_INFINITY;
+//
+//                for (int x = 0; x < COLUMNS; x++) {
+//                    if (!root.makePly(x, PlayerType.MINIMIZING_PLAYER)) {
+//                        continue;
+//                    }
+//
+//                    value = Math.min(value,
+//                                     alphaBetaImpl(root,
+//                                                   depth - 1,
+//                                                   alpha,
+//                                                   beta,
+//                                                   PlayerType.MAXIMIZING_PLAYER,
+//                                                   seedStateHeuristicFunction));
+//
+//                    root.unmakePly(x);
+//
+//                    if (value < alpha) {
+//                        break;
+//                    }
+//
+//                    beta = Math.min(beta, value);
+//                }
+//
+//                return value;
+//            }          
+//        }
+//    }
     }
 }
