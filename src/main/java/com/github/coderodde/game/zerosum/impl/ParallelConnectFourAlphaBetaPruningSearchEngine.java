@@ -21,11 +21,17 @@ public final class ParallelConnectFourAlphaBetaPruningSearchEngine
 implements SearchEngine<ConnectFourBoard> {
 
     private static final int MINIMUM_SEED_DEPTH = 2;
-    private static final int DEFAULT_SEED_DEPTH = 3;
+    private static final int DEFAULT_SEED_DEPTH = 2;
     
     private final HeuristicFunction<ConnectFourBoard> heuristicFunction;
-    private final int seedDepth;
+    private int seedDepth;
     
+    /**
+     * Constructs this search engine.
+     * 
+     * @param heuristicFunction the heuristic function used to score the states.
+     * @param seedDepth         the depth of the seed states.
+     */
     public ParallelConnectFourAlphaBetaPruningSearchEngine(
             final HeuristicFunction<ConnectFourBoard> heuristicFunction,
             final int seedDepth) {
@@ -34,12 +40,25 @@ implements SearchEngine<ConnectFourBoard> {
         this.seedDepth = seedDepth;
     }
     
+    /**
+     * Constructs this search engine.
+     * 
+     * @param heuristicFunction the heuristic function used to score the states.
+     */
     public ParallelConnectFourAlphaBetaPruningSearchEngine(
             final ConnectFourHeuristicFunction heuristicFunction) {
         
         this(heuristicFunction, DEFAULT_SEED_DEPTH);
     }
     
+    /**
+     * Performs the actual search for the next move state.
+     * 
+     * @param root  the root state of the search.
+     * @param depth the depth of the search.
+     * 
+     * @return next move state.
+     */
     @Override
     public ConnectFourBoard search(ConnectFourBoard root, int depth) {
         if (depth < MINIMUM_SEED_DEPTH) {
@@ -49,18 +68,30 @@ implements SearchEngine<ConnectFourBoard> {
                                               depth);
         }
         
-        final List<ConnectFourBoard> seedStates = getSeedStates(root, 
-                                                                seedDepth);
+        // Obtains the list of seed states. May lower the 'seedDepth':
+        final List<ConnectFourBoard> seedStates = getSeedStates(root);
         
+        if (seedDepth <= MINIMUM_SEED_DEPTH) {
+            // Once here, the search is effectively shallow. This means that 
+            // reaching a full board requires less plies than 'depth':
+            return new ConnectFourAlphaBetaPruningSearchEngine(
+                    heuristicFunction).search(root, 
+                                              seedDepth);
+        }
+        
+        // Randomly shuffle the seed states. This is a trivial load balancing:
         Collections.shuffle(seedStates);
         
+        // Get the list of thread workloads:
         final List<List<ConnectFourBoard>> threadLoads = 
                 bucketizeSeedStates(seedStates, 
                                     Runtime.getRuntime().availableProcessors());
         
+        // Create the list of search threads:
         final List<SearchThread> searchThreadList = 
                 new ArrayList<>(threadLoads.size());
         
+        // Populate the search threads:
         for (final List<ConnectFourBoard> threadLoad : threadLoads) {
             final SearchThread searchThread =
                     new SearchThread(
@@ -75,6 +106,7 @@ implements SearchEngine<ConnectFourBoard> {
             searchThreadList.add(searchThread);
         }
         
+        // Wait for all the threads to complete:
         for (final SearchThread searchThread : searchThreadList) {
             try {
                 searchThread.join();
@@ -83,17 +115,27 @@ implements SearchEngine<ConnectFourBoard> {
             }
         }
         
+        // Compute the global seed state score map:
         final Map<ConnectFourBoard, Double> globalScoreMap = 
                 getGlobalScoreMap(searchThreadList);
         
-        final SeedHeuristicFunction seedHeuristicFunction = 
-                new SeedHeuristicFunction(globalScoreMap);
+        // Construct the seed state heuristic function:
+        final SeedStateHeuristicFunction seedHeuristicFunction = 
+                new SeedStateHeuristicFunction(globalScoreMap);
         
+        // Just compute above the seed states:
         return alphaBetaImplRoot(root, 
                                  seedHeuristicFunction,
                                  seedDepth);
     }
     
+    /**
+     * The 
+     * @param root
+     * @param heuristicFunction
+     * @param seedDepth
+     * @return 
+     */
     private static ConnectFourBoard 
         alphaBetaImplRoot(
                 final ConnectFourBoard root,
@@ -101,7 +143,6 @@ implements SearchEngine<ConnectFourBoard> {
                 final int seedDepth) {
         
         double tentativeValue = Double.NEGATIVE_INFINITY;
-        double alpha = Double.NEGATIVE_INFINITY;
         
         ConnectFourBoard bestMoveState = null;
         
@@ -123,12 +164,19 @@ implements SearchEngine<ConnectFourBoard> {
             }
             
             root.unmakePly(x);
-            alpha = Math.max(alpha, value);
         }
         
         return bestMoveState;
     }
     
+    /**
+     * Combines all the score maps into one global map for searching above the
+     * seed states.
+     * 
+     * @param searchThreadList the list of search threads.
+     * 
+     * @return the combined global score map.
+     */
     private static Map<ConnectFourBoard, Double>
          getGlobalScoreMap(final List<SearchThread> searchThreadList) {
         
@@ -141,29 +189,46 @@ implements SearchEngine<ConnectFourBoard> {
         return globalScoreMap;
     }
     
+    /**
+     * Splits the list of seed states into list of lists of seed states.
+     * 
+     * @param seedStates  the list of all the seed states.
+     * @param threadCount the number of threads to assume.
+     * 
+     * @return list of seed state buckets. One for each thread.
+     */
     private static List<List<ConnectFourBoard>> 
         bucketizeSeedStates(final List<ConnectFourBoard> seedStates,
                             final int threadCount) {
             
+        // Construct a list with capacity sufficient to accommodate all the
+        // buckets:
         final List<List<ConnectFourBoard>> threadBuckets = 
                 new ArrayList<>(threadCount);
         
+        // The basic number of seed states per thread bucket:
         final int basicNumberOfSeedsPerBucket = seedStates.size() / threadCount;
         
+        // The seed state index:
         int index = 0;
         
         for (int i = 0; i < threadCount; i++) {
-            
+            // Construct the new bucket. +1 in order to add additional possible
+            // seed state in case 'threadCount' does not divide
+            // 'seedStates.size()':
             final List<ConnectFourBoard> bucket = 
                     new ArrayList<>(basicNumberOfSeedsPerBucket + 1);
             
+            // Load the current bucket:
             for (int j = 0; j < basicNumberOfSeedsPerBucket; j++, index++) {
                 bucket.add(seedStates.get(index));
             }
             
+            // Add the bucket to the bucket list:
             threadBuckets.add(bucket);
         }
         
+        // How many threads should receive one more additional seed state?
         final int remainingStates = seedStates.size() % threadCount;
         
         for (int i = 0; i < remainingStates; i++, index++) {
@@ -173,9 +238,15 @@ implements SearchEngine<ConnectFourBoard> {
         return threadBuckets;
     }
     
-    private static List<ConnectFourBoard> getSeedStates(
-            final ConnectFourBoard root,
-            final int seedDepth) {
+    /**
+     * Computes the list of seed states. The idea is that each search thread 
+     * starts its search from a seed state.
+     * 
+     * @param root the actual root state of the search.
+     * 
+     * @return the list of seed states.
+     */
+    private List<ConnectFourBoard> getSeedStates(final ConnectFourBoard root) {
         
         List<ConnectFourBoard> levelA = new ArrayList<>();
         List<ConnectFourBoard> levelB = new ArrayList<>();
@@ -183,26 +254,45 @@ implements SearchEngine<ConnectFourBoard> {
         
         levelA.add(root);
         
+        int effectiveSeedDepth = 0;
+        
         for (int i = 0; i < seedDepth; i++) {
+            // Load next state layer:
             for (final ConnectFourBoard cfb : levelA) {
                 levelB.addAll(cfb.expand(playerType));
+            }
+            
+            if (!levelB.isEmpty()) {
+                effectiveSeedDepth++;
+            } else {
+                // Once here, the root state is missing very few plies:
+                seedDepth = effectiveSeedDepth;
+                return levelA;
             }
             
             levelA.clear();
             levelA.addAll(levelB);
             levelB.clear();
+            
+            // Assume the opposite player:
             playerType = playerType.flip();
         }
         
         return levelA;
     }
     
-    private static final class SeedHeuristicFunction
+    /**
+     * This static inner class implements the heuristic function for the seed 
+     * states.
+     */
+    private static final class SeedStateHeuristicFunction
             implements HeuristicFunction<ConnectFourBoard> {
 
         private final Map<ConnectFourBoard, Double> scoreMap;
         
-        SeedHeuristicFunction(final Map<ConnectFourBoard, Double> scoreMap) {
+        SeedStateHeuristicFunction(
+                final Map<ConnectFourBoard, Double> scoreMap) {
+            
             this.scoreMap = scoreMap;
         }
         
@@ -212,14 +302,45 @@ implements SearchEngine<ConnectFourBoard> {
         }
     }
     
+    /**
+     * This static inner class implements the actual search routine starting 
+     * from seed states.
+     */
     private static final class SearchThread extends Thread {
         
+        /**
+         * The list of seed states to process.
+         */
         private final List<ConnectFourBoard> workload;
+        
+        /**
+         * This map maps each seed states to its score after computation.
+         */
         private final Map<ConnectFourBoard, Double> scoreMap;
+        
+        /**
+         * The heuristic function for evaluating intermediate states.
+         */
         private final HeuristicFunction<ConnectFourBoard> heuristicFunction;
+        
+        /**
+         * The beginning player type.
+         */
         private final PlayerType rootPlayerType;
+        
+        /**
+         * The (maximal) search depth.
+         */
         private final int depth;
         
+        /**
+         * Constructs this search thread.
+         * 
+         * @param workload          the workload list of seed states.
+         * @param heuristicFunction the heuristic function.
+         * @param rootPlayerType    the beginning player type.
+         * @param depth             the maximal search depth.
+         */
         SearchThread(final List<ConnectFourBoard> workload,
                      final HeuristicFunction<ConnectFourBoard> 
                            heuristicFunction,
@@ -233,10 +354,18 @@ implements SearchEngine<ConnectFourBoard> {
             this.depth = depth;
         }
         
+        /**
+         * Returns computed score map mapping each seed state to its score.
+         * 
+         * @return the score map.
+         */
         Map<ConnectFourBoard, Double> getScoreMap() {
             return scoreMap;
         }
         
+        /**
+         * Runs the search in this thread.
+         */
         @Override
         public void run() {
             for (final ConnectFourBoard root : workload) {
