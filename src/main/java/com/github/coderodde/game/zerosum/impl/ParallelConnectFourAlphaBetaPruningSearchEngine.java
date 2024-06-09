@@ -130,11 +130,13 @@ implements SearchEngine<ConnectFourBoard> {
     }
     
     /**
-     * The 
-     * @param root
-     * @param heuristicFunction
-     * @param seedDepth
-     * @return 
+     * The topmost call to the search routine.
+     * 
+     * @param root              the root state.
+     * @param heuristicFunction the heruistic function.
+     * @param seedDepth         the seed state depth.
+     * 
+     * @return the next move state.
      */
     private static ConnectFourBoard 
         alphaBetaImplRoot(
@@ -142,12 +144,16 @@ implements SearchEngine<ConnectFourBoard> {
                 final HeuristicFunction<ConnectFourBoard> heuristicFunction,
                 final int seedDepth) {
         
+        // The best known value. Must be maximized:
         double tentativeValue = Double.NEGATIVE_INFINITY;
         
+        // The best known next move state:
         ConnectFourBoard bestMoveState = null;
         
         for (int x = 0; x < COLUMNS; x++) {
+            // Try to make a ply at column 'x':
             if (!root.makePly(x, PlayerType.MAXIMIZING_PLAYER)) {
+                // The entire column at X=x is full. Omit.
                 continue;
             }
             
@@ -159,10 +165,13 @@ implements SearchEngine<ConnectFourBoard> {
                                          heuristicFunction);
             
             if (tentativeValue < value) {
+                // Once here, we can improve the next best move:
                 tentativeValue = value;
+                // Copy the current state of 'root' to the 'bestMoveState':
                 bestMoveState = new ConnectFourBoard(root);
             }
             
+            // Undo the previously made ply:
             root.unmakePly(x);
         }
         
@@ -180,8 +189,10 @@ implements SearchEngine<ConnectFourBoard> {
     private static Map<ConnectFourBoard, Double>
          getGlobalScoreMap(final List<SearchThread> searchThreadList) {
         
+        // Construct the global score map:
         final Map<ConnectFourBoard, Double> globalScoreMap = new HashMap<>();
         
+        // Load the global score map from each search thread score map:
         for (final SearchThread searchThread : searchThreadList) {
             globalScoreMap.putAll(searchThread.getScoreMap());
         }
