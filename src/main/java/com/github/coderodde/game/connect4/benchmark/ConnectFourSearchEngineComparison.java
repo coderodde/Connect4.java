@@ -84,13 +84,13 @@ public class ConnectFourSearchEngineComparison {
         final int ENGINE1_DEPTH = 9;
         final int ENGINE2_DEPTH = 9;
         
-        while (board.isTerminal() == false) {
+        while (true) {
             // Serial search engine makes a ply first per round:
             startTime = System.currentTimeMillis();
             
             board = engine1.search(board,
                                    ENGINE1_DEPTH,
-                                   PlayerType.MINIMIZING_PLAYER);
+                                   PlayerType.MAXIMIZING_PLAYER);
             
             endTime = System.currentTimeMillis();
             
@@ -102,10 +102,17 @@ public class ConnectFourSearchEngineComparison {
             
             System.out.printf("Serial engine in %d milliseconds.\n", duration);
             
+            if (board.isTerminal()) {
+                report(board);
+                break;
+            }
+            
             // Parallel search engine is the second in a turn:
             startTime = System.currentTimeMillis();
             
-            board = engine2.search(board, ENGINE2_DEPTH);
+            board = engine2.search(board, 
+                                   ENGINE2_DEPTH,
+                                   PlayerType.MINIMIZING_PLAYER);
             
             endTime = System.currentTimeMillis();
             
@@ -118,6 +125,11 @@ public class ConnectFourSearchEngineComparison {
             System.out.printf(
                     "Parallel engine in %d milliseconds.\n", 
                     duration);
+            
+            if (board.isTerminal()) {
+                report(board);
+                break;
+            }
         }
         
         System.out.printf(
@@ -127,14 +139,21 @@ public class ConnectFourSearchEngineComparison {
         System.out.printf(
                 "Parallel engine in total %d milliseconds.\n", 
                 duration2);
-        
-        if (board.isTie()) {
+    }
+    
+    private static void report(final ConnectFourBoard connectFourBoard) {
+        if (connectFourBoard.isTie()) {
             System.out.println("RESULT: It's a tie.");
-        } else if (board.isWinningFor(PlayerType.MINIMIZING_PLAYER)) {
-            System.out.println("RESULT: Serial engine wins.");
-        } else if (board.isWinningFor(PlayerType.MAXIMIZING_PLAYER)) {
+        } else if (connectFourBoard
+                .isWinningFor(PlayerType.MINIMIZING_PLAYER)) {
+            
             System.out.println("RESULT: Parallel engine wins.");
+        } else if (connectFourBoard
+                .isWinningFor(PlayerType.MAXIMIZING_PLAYER)) {
+            
+            System.out.println("RESULT: Serial engine wins.");
         } else {
+            
             throw new IllegalStateException("Should not get here.");
         }
     }

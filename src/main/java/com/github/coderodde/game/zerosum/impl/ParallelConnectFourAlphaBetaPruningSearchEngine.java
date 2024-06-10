@@ -9,7 +9,6 @@ import com.github.coderodde.game.zerosum.SearchEngine;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -63,7 +62,11 @@ implements SearchEngine<ConnectFourBoard> {
      * @return next move state.
      */
     @Override
-    public ConnectFourBoard search(ConnectFourBoard root, int depth) {
+    public ConnectFourBoard 
+        search(final ConnectFourBoard root, 
+               final int depth,
+               final PlayerType playerType) {
+    
         this.requestedDepth = depth;
         
         if (depth < Math.max(MINIMUM_SEED_DEPTH, MINIMUM_DEPTH)) {
@@ -74,7 +77,8 @@ implements SearchEngine<ConnectFourBoard> {
         }
         
         // Obtains the list of seed states. May lower the 'seedDepth':
-        final List<ConnectFourBoard> seedStates = getSeedStates(root);
+        final List<ConnectFourBoard> seedStates = getSeedStates(root,
+                                                                playerType);
         
         // Randomly shuffle the seed states. This is a trivial load balancing:
         Collections.shuffle(seedStates);
@@ -83,7 +87,7 @@ implements SearchEngine<ConnectFourBoard> {
         final List<List<ConnectFourBoard>> threadLoads = 
                 bucketizeSeedStates(seedStates, 
                                     Runtime.getRuntime().availableProcessors());
-//        System.out.println("hello");
+        
         // Create the list of search threads:
         final List<SearchThread> searchThreadList = 
                 new ArrayList<>(threadLoads.size());
@@ -123,7 +127,8 @@ implements SearchEngine<ConnectFourBoard> {
         // Just compute above the seed states:
         return alphaBetaImplRoot(root, 
                                  seedHeuristicFunction,
-                                 requestedDepth);
+                                 requestedDepth,
+                                 playerType);
     }
     
     /**
@@ -139,43 +144,78 @@ implements SearchEngine<ConnectFourBoard> {
         alphaBetaImplRoot(
                 final ConnectFourBoard root,
                 final SeedStateHeuristicFunction seedHeuristicFunction,
-                final int depth) {
-        
-        // The best known value. Must be maximized:
-        double tentativeValue = Double.NEGATIVE_INFINITY;
-        double alpha = Double.NEGATIVE_INFINITY;
-        
-        // The best known next move state:
+                final int depth,
+                final PlayerType playerType) {
+            
         ConnectFourBoard bestMoveState = null;
         
-        for (int x = 0; x < COLUMNS; x++) {
-            // Try to make a ply at column 'x':
-            if (!root.makePly(x, PlayerType.MAXIMIZING_PLAYER)) {
-                // The entire column at X=x is full. Omit.
-                continue;
+        if (playerType == PlayerType.MAXIMIZING_PLAYER) {
+            
+            double tentativeValue = Double.NEGATIVE_INFINITY;
+            double alpha = Double.NEGATIVE_INFINITY;
+
+            for (int x = 0; x < COLUMNS; x++) {
+                // Try to make a ply at column 'x':
+                if (!root.makePly(x, PlayerType.MAXIMIZING_PLAYER)) {
+                    // The entire column at X=x is full. Omit.
+                    continue;
+                }
+
+                double value = 
+                        alphaBetaImplAboveSeedLayer(root,
+                                                    depth - 1,
+                                                    alpha,
+                                                    Double.POSITIVE_INFINITY,
+                                                    PlayerType.MINIMIZING_PLAYER,
+                                                    seedHeuristicFunction);
+
+                if (tentativeValue < value) {
+                    // Once here, we can improve the next best move:
+                    tentativeValue = value;
+                    // Copy the current state of 'root' to the 'bestMoveState':
+                    bestMoveState = new ConnectFourBoard(root);
+                }
+
+                // Undo the previously made ply:
+                root.unmakePly(x);
+
+                alpha = Math.max(alpha, value);
             }
-            
-            double value = 
-                    alphaBetaImplAboveSeedLayer(root,
-                                                depth - 1,
-                                                alpha,
-                                                Double.POSITIVE_INFINITY,
-                                                PlayerType.MINIMIZING_PLAYER,
-                                                seedHeuristicFunction);
-            
-            if (tentativeValue < value) {
-                // Once here, we can improve the next best move:
-                tentativeValue = value;
-                // Copy the current state of 'root' to the 'bestMoveState':
-                bestMoveState = new ConnectFourBoard(root);
-            }
-            
-            // Undo the previously made ply:
-            root.unmakePly(x);
-            
-            alpha = Math.max(alpha, value);
-        }
         
+            return bestMoveState;
+        } else {
+            double tentativeValue = Double.POSITIVE_INFINITY;
+            double beta = Double.POSITIVE_INFINITY;
+            
+            for (int x = 0; x < COLUMNS; x++) {
+                // Try to make a ply at column 'x':
+                if (!root.makePly(x, playerType)) {
+                    // The entire column at X=x is full. Omit.
+                    continue;
+                }
+                
+                double value = 
+                        alphaBetaImplAboveSeedLayer(
+                                root,
+                                depth - 1,
+                                Double.NEGATIVE_INFINITY,
+                                beta,
+                                PlayerType.MAXIMIZING_PLAYER,
+                                seedHeuristicFunction);
+                
+                if (tentativeValue > value) {
+                    tentativeValue = value;
+                    bestMoveState = new ConnectFourBoard(root);
+                }
+                
+                // Undo the previously made ply:
+                root.unmakePly(x);
+                
+                beta = Math.min(beta, value);
+            }
+        }
+            
+        // The best known value
         return bestMoveState;
     }
         
@@ -193,8 +233,7 @@ implements SearchEngine<ConnectFourBoard> {
         }
         
         if (requestedDepth - depth == seedDepth) {
-//            throw new IllegalStateException("found");
-            // Once here, we have reached the seed layer.
+            // Once here, we have reached the seed level.
             // 0 as the second argument is ignored. Just return the
             // score for 'root' as we have computed its score in a 
             // thread:
@@ -336,11 +375,11 @@ implements SearchEngine<ConnectFourBoard> {
      * 
      * @return the list of seed states.
      */
-    private List<ConnectFourBoard> getSeedStates(final ConnectFourBoard root) {
+    private List<ConnectFourBoard> getSeedStates(final ConnectFourBoard root,
+                                                 PlayerType playerType) {
         
         List<ConnectFourBoard> levelA = new ArrayList<>();
         List<ConnectFourBoard> levelB = new ArrayList<>();
-        PlayerType playerType = PlayerType.MAXIMIZING_PLAYER;
         
         // Initialize the expansion:
         levelA.add(root);
@@ -373,11 +412,10 @@ implements SearchEngine<ConnectFourBoard> {
     }
 
     @Override
-    public ConnectFourBoard search(ConnectFourBoard root,
-                                   int depth, 
-                                   PlayerType playerType) {
+    public ConnectFourBoard search(final ConnectFourBoard root,
+                                   final int depth) {
         
-        throw new UnsupportedOperationException("Not supported yet.");
+        return search(root, depth, PlayerType.MAXIMIZING_PLAYER);
     }
 }
 
