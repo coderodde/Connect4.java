@@ -82,30 +82,12 @@ public class ConnectFourSearchEngineComparison {
         System.out.println(board);
         
         final int ENGINE1_DEPTH = 9;
-        final int ENGINE2_DEPTH = 9;
+        final int ENGINE2_DEPTH = 10;
+        
+        System.out.printf("Serial AI depth: %d\n", ENGINE1_DEPTH);
+        System.out.printf("Parallel AI depth: %d\n", ENGINE2_DEPTH);
         
         while (true) {
-            // Serial search engine makes a ply first per round:
-            startTime = System.currentTimeMillis();
-            
-            board = engine1.search(board,
-                                   ENGINE1_DEPTH,
-                                   PlayerType.MAXIMIZING_PLAYER);
-            
-            endTime = System.currentTimeMillis();
-            
-            duration = endTime - startTime;
-            
-            duration1 += duration;
-            
-            System.out.println(board);
-            
-            System.out.printf("Serial engine in %d milliseconds.\n", duration);
-            
-            if (board.isTerminal()) {
-                report(board);
-                break;
-            }
             
             // Parallel search engine is the second in a turn:
             startTime = System.currentTimeMillis();
@@ -125,6 +107,28 @@ public class ConnectFourSearchEngineComparison {
             System.out.printf(
                     "Parallel engine in %d milliseconds.\n", 
                     duration);
+            
+            if (board.isTerminal()) {
+                report(board);
+                break;
+            }
+            
+            // Serial search engine makes a ply first per round:
+            startTime = System.currentTimeMillis();
+            
+            board = engine1.search(board,
+                                   ENGINE1_DEPTH,
+                                   PlayerType.MAXIMIZING_PLAYER);
+            
+            endTime = System.currentTimeMillis();
+            
+            duration = endTime - startTime;
+            
+            duration1 += duration;
+            
+            System.out.println(board);
+            
+            System.out.printf("Serial engine in %d milliseconds.\n", duration);
             
             if (board.isTerminal()) {
                 report(board);
