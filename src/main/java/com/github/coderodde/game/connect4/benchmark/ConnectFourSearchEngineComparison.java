@@ -8,7 +8,7 @@ import com.github.coderodde.game.zerosum.impl.ParallelConnectFourAlphaBetaPrunin
 
 public class ConnectFourSearchEngineComparison {
     
-    private static final int DEPTH = 7;
+    private static final int DEPTH = 9;
 
     public static void main(String[] args) {
         ConnectFourBoard b = new ConnectFourBoard();
