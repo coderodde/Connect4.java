@@ -9,6 +9,7 @@ import com.github.coderodde.game.zerosum.impl.ParallelConnectFourAlphaBetaPrunin
 public class ConnectFourSearchEngineComparison {
     
     private static final int DEPTH = 9;
+    private static final int SEED_DEPTH = 2;
 
     public static void main(String[] args) {
         ConnectFourBoard b = new ConnectFourBoard();
@@ -48,7 +49,7 @@ public class ConnectFourSearchEngineComparison {
         startTime = System.currentTimeMillis();
         
         r = new ParallelConnectFourAlphaBetaPruningSearchEngine(
-                heuristicFunction)
+                heuristicFunction, SEED_DEPTH)
                 .search(b, DEPTH);
         
         endTime = System.currentTimeMillis();
