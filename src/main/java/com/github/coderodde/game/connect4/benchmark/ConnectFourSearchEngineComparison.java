@@ -2,6 +2,8 @@ package com.github.coderodde.game.connect4.benchmark;
 
 import com.github.coderodde.game.connect4.ConnectFourBoard;
 import com.github.coderodde.game.connect4.ConnectFourHeuristicFunction;
+import com.github.coderodde.game.zerosum.PlayerType;
+import com.github.coderodde.game.zerosum.SearchEngine;
 import com.github.coderodde.game.zerosum.impl.AlphaBetaPruningSearchEngine;
 import com.github.coderodde.game.zerosum.impl.ConnectFourAlphaBetaPruningSearchEngine;
 import com.github.coderodde.game.zerosum.impl.ParallelConnectFourAlphaBetaPruningSearchEngine;
@@ -61,5 +63,79 @@ public class ConnectFourSearchEngineComparison {
             endTime - startTime);
         
         System.out.println(r);
+        
+        System.out.println("<<< AI vs. AI >>>");
+        
+        long duration1 = 0L;
+        long duration2 = 0L;
+        long duration = 0L;
+        
+        final SearchEngine<ConnectFourBoard> engine1 = 
+                new ConnectFourAlphaBetaPruningSearchEngine(heuristicFunction);
+        
+        final SearchEngine<ConnectFourBoard> engine2 = 
+                new ParallelConnectFourAlphaBetaPruningSearchEngine(
+                        heuristicFunction, 
+                        SEED_DEPTH);
+        
+        ConnectFourBoard board = new ConnectFourBoard();
+        System.out.println(board);
+        
+        final int ENGINE1_DEPTH = 9;
+        final int ENGINE2_DEPTH = 9;
+        
+        while (board.isTerminal() == false) {
+            // Serial search engine makes a ply first per round:
+            startTime = System.currentTimeMillis();
+            
+            board = engine1.search(board,
+                                   ENGINE1_DEPTH,
+                                   PlayerType.MINIMIZING_PLAYER);
+            
+            endTime = System.currentTimeMillis();
+            
+            duration = endTime - startTime;
+            
+            duration1 += duration;
+            
+            System.out.println(board);
+            
+            System.out.printf("Serial engine in %d milliseconds.\n", duration);
+            
+            // Parallel search engine is the second in a turn:
+            startTime = System.currentTimeMillis();
+            
+            board = engine2.search(board, ENGINE2_DEPTH);
+            
+            endTime = System.currentTimeMillis();
+            
+            duration = endTime - startTime;
+            
+            duration2 += duration;
+            
+            System.out.println(board);
+            
+            System.out.printf(
+                    "Parallel engine in %d milliseconds.\n", 
+                    duration);
+        }
+        
+        System.out.printf(
+                "Serial engine in total %d milliseconds.\n", 
+                duration1);
+        
+        System.out.printf(
+                "Parallel engine in total %d milliseconds.\n", 
+                duration2);
+        
+        if (board.isTie()) {
+            System.out.println("RESULT: It's a tie.");
+        } else if (board.isWinningFor(PlayerType.MINIMIZING_PLAYER)) {
+            System.out.println("RESULT: Serial engine wins.");
+        } else if (board.isWinningFor(PlayerType.MAXIMIZING_PLAYER)) {
+            System.out.println("RESULT: Parallel engine wins.");
+        } else {
+            throw new IllegalStateException("Should not get here.");
+        }
     }
 }

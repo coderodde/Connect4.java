@@ -28,47 +28,80 @@ public final class ConnectFourAlphaBetaPruningSearchEngine
     @Override
     public ConnectFourBoard search(final ConnectFourBoard root, 
                                    final int depth) {
+        
+        return search(root,
+                      depth,
+                      PlayerType.MAXIMIZING_PLAYER);
+    }   
+
+    @Override
+    public ConnectFourBoard search(final ConnectFourBoard root,
+                                   int depth, 
+                                   final PlayerType playerType) {
         bestMoveState = null;
         
         alphaBetaRootImpl(root, 
                           depth,
-                          Double.NEGATIVE_INFINITY, 
-                          Double.POSITIVE_INFINITY);
+                          playerType);
         
         return bestMoveState;
     }
     
     private void alphaBetaRootImpl(final ConnectFourBoard root, 
                                    final int depth,
-                                   double alpha,
-                                   double beta) {
+                                   final PlayerType playerType) {
         
-        // The first turn belongs to AI/the maximizing player:
-        double tentativeValue = Double.NEGATIVE_INFINITY;
-        
-        for (int x = 0; x < COLUMNS; x++) {
-            if (!root.makePly(x, PlayerType.MAXIMIZING_PLAYER)) {
-                continue;
-            }
+        if (playerType == PlayerType.MAXIMIZING_PLAYER) {
             
-            double value = alphaBetaImpl(root,
-                                         depth - 1,
-                                         Double.NEGATIVE_INFINITY,
-                                         Double.POSITIVE_INFINITY,
-                                         PlayerType.MINIMIZING_PLAYER);
+            // Try to maximize the value:
+            double tentativeValue = Double.NEGATIVE_INFINITY;
+            double alpha = Double.NEGATIVE_INFINITY;
+            
+            for (int x = 0; x < COLUMNS; x++) {
+                if (!root.makePly(x, PlayerType.MAXIMIZING_PLAYER)) {
+                    continue;
+                }
 
-            if (tentativeValue < value) {
-                tentativeValue = value;
-                bestMoveState = new ConnectFourBoard(root);
+                double value = alphaBetaImpl(root,
+                                             depth - 1,
+                                             alpha,
+                                             Double.POSITIVE_INFINITY,
+                                             PlayerType.MINIMIZING_PLAYER);
+                
+                if (tentativeValue < value) {
+                    tentativeValue = value;
+                    bestMoveState = new ConnectFourBoard(root);
+                }
+
+                root.unmakePly(x);  
+                
+                alpha = Math.max(alpha, value);
             }
+        } else {
             
-            root.unmakePly(x);
+            double tentativeValue = Double.POSITIVE_INFINITY;
+            double beta = Double.POSITIVE_INFINITY;
             
-            if (value > beta) {
-                break;
+            for (int x = 0; x < COLUMNS; x++) {
+                if (!root.makePly(x, PlayerType.MINIMIZING_PLAYER)) {
+                    continue;
+                }
+
+                double value = alphaBetaImpl(root,
+                                             depth - 1,
+                                             Double.NEGATIVE_INFINITY,
+                                             beta,
+                                             PlayerType.MAXIMIZING_PLAYER);
+
+                if (tentativeValue > value) {
+                    tentativeValue = value;
+                    bestMoveState = new ConnectFourBoard(root);
+                }
+
+                root.unmakePly(x);
+                
+                beta = Math.min(beta, value);
             }
-            
-            alpha = Math.max(alpha, value);
         }
     }
     
@@ -133,5 +166,5 @@ public final class ConnectFourAlphaBetaPruningSearchEngine
             
             return value;
         }          
-    }   
+    }
 }

@@ -9,6 +9,7 @@ import com.github.coderodde.game.zerosum.SearchEngine;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -74,14 +75,6 @@ implements SearchEngine<ConnectFourBoard> {
         
         // Obtains the list of seed states. May lower the 'seedDepth':
         final List<ConnectFourBoard> seedStates = getSeedStates(root);
-        
-//        if (seedDepth <= MINIMUM_SEED_DEPTH) {
-//            // Once here, the search is effectively shallow. This means that 
-//            // reaching a full board requires less plies than 'depth':
-//            return new ConnectFourAlphaBetaPruningSearchEngine(
-//                    heuristicFunction).search(root, 
-//                                              seedDepth);
-//        }
         
         // Randomly shuffle the seed states. This is a trivial load balancing:
         Collections.shuffle(seedStates);
@@ -374,6 +367,14 @@ implements SearchEngine<ConnectFourBoard> {
         }
         
         return levelA;
+    }
+
+    @Override
+    public ConnectFourBoard search(ConnectFourBoard root,
+                                   int depth, 
+                                   PlayerType playerType) {
+        
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
 
