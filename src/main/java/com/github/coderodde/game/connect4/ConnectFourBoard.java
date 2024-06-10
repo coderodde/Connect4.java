@@ -82,6 +82,30 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
         return true;
     }
     
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+            
+        if (o == this) {
+            return true;
+        }
+        
+        if (!this.getClass().equals(o.getClass())) {
+            return false;
+        }
+        
+        final ConnectFourBoard other = (ConnectFourBoard) o;
+        
+        return Arrays.equals(boardData, other.boardData);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(boardData);
+    }
+    
     public List<Point> getWinningPattern() {
         if (!isWinningFor(PlayerType.MINIMIZING_PLAYER) &&
             !isWinningFor(PlayerType.MAXIMIZING_PLAYER)) {

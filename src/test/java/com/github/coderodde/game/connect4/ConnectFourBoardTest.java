@@ -356,4 +356,24 @@ public final class ConnectFourBoardTest {
         assertEquals(PlayerType.MINIMIZING_PLAYER, b.get(4, ROWS - 1));
         assertEquals(PlayerType.MAXIMIZING_PLAYER, b.get(4, ROWS - 2));
     }
+    
+    @Test
+    public void equals() {
+        ConnectFourBoard b1 = new ConnectFourBoard();
+        ConnectFourBoard b2 = new ConnectFourBoard();
+        
+        b1.makePly(3, PlayerType.MINIMIZING_PLAYER);
+        b1.makePly(5, PlayerType.MAXIMIZING_PLAYER);
+        
+        b2.makePly(3, PlayerType.MINIMIZING_PLAYER);
+        b2.makePly(5, PlayerType.MAXIMIZING_PLAYER);
+        
+        assertTrue(b1.equals(b2));
+        assertTrue(b2.equals(b1));
+        
+        b2.makePly(5, PlayerType.MINIMIZING_PLAYER);
+        
+        assertFalse(b1.equals(b2));
+        assertFalse(b2.equals(b1));
+    }
 }

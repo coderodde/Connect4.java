@@ -8,7 +8,7 @@ import com.github.coderodde.game.zerosum.impl.ParallelConnectFourAlphaBetaPrunin
 
 public class ConnectFourSearchEngineComparison {
     
-    private static final int DEPTH = 10;
+    private static final int DEPTH = 7;
 
     public static void main(String[] args) {
         ConnectFourBoard b = new ConnectFourBoard();
@@ -18,7 +18,8 @@ public class ConnectFourSearchEngineComparison {
         
         long startTime = System.currentTimeMillis();
         
-        r = new AlphaBetaPruningSearchEngine<>(heuristicFunction).search(b, DEPTH);
+        r = new AlphaBetaPruningSearchEngine<>(heuristicFunction)
+                .search(b, DEPTH);
         
         long endTime = System.currentTimeMillis();
         
@@ -46,15 +47,17 @@ public class ConnectFourSearchEngineComparison {
         
         startTime = System.currentTimeMillis();
         
-        r = new ParallelConnectFourAlphaBetaPruningSearchEngine(heuristicFunction)
+        r = new ParallelConnectFourAlphaBetaPruningSearchEngine(
+                heuristicFunction)
                 .search(b, DEPTH);
         
         endTime = System.currentTimeMillis();
         
         System.out.printf(
-                "ParallelConnectFourAlphaBetaPruningSearchEngine in %d " + 
-                        "milliseconds.\n",
-                endTime - startTime);
+            """
+            ParallelConnectFourAlphaBetaPruningSearchEngine in %d milliseconds.
+            """,
+            endTime - startTime);
         
         System.out.println(r);
     }
