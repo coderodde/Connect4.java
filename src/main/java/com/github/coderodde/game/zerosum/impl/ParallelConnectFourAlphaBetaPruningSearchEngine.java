@@ -143,6 +143,7 @@ implements SearchEngine<ConnectFourBoard> {
         
         // The best known value. Must be maximized:
         double tentativeValue = Double.NEGATIVE_INFINITY;
+        double alpha = Double.NEGATIVE_INFINITY;
         
         // The best known next move state:
         ConnectFourBoard bestMoveState = null;
@@ -157,7 +158,7 @@ implements SearchEngine<ConnectFourBoard> {
             double value = 
                     alphaBetaImplAboveSeedLayer(root,
                                                 depth - 1,
-                                                Double.NEGATIVE_INFINITY,
+                                                alpha,
                                                 Double.POSITIVE_INFINITY,
                                                 PlayerType.MINIMIZING_PLAYER,
                                                 seedHeuristicFunction);
@@ -171,6 +172,8 @@ implements SearchEngine<ConnectFourBoard> {
             
             // Undo the previously made ply:
             root.unmakePly(x);
+            
+            alpha = Math.max(alpha, value);
         }
         
         return bestMoveState;
