@@ -25,6 +25,17 @@ public final class AlphaBetaPruningSearchEngine<S extends GameState<S>>
             final HeuristicFunction<S> heuristicFunction) {
         this.heuristicFunction = heuristicFunction;
     }
+
+    @Override
+    public S search(S root, int depth, PlayerType playerType) {
+        bestMoveState = null;
+        
+        alphaBetaRootImpl(root, 
+                          depth,
+                          playerType);
+        
+        return bestMoveState;
+    }
     
     @Override
     public S search(final S root, final int depth) {
@@ -32,38 +43,53 @@ public final class AlphaBetaPruningSearchEngine<S extends GameState<S>>
         
         alphaBetaRootImpl(root, 
                           depth,
-                          Double.NEGATIVE_INFINITY, 
-                          Double.POSITIVE_INFINITY);
+                          PlayerType.MAXIMIZING_PLAYER);
         
         return bestMoveState;
     }
     
     private void alphaBetaRootImpl(final S root, 
                                    final int depth,
-                                   double alpha,
-                                   double beta) {
-        bestMoveState = null;
-        
-        // The first turn belongs to AI/the maximizing player:
-        double tentativeValue = Double.NEGATIVE_INFINITY;
-        
-        for (final S child : root.expand(PlayerType.MAXIMIZING_PLAYER)) {
-            double value = alphaBetaImpl(child,
-                                         depth - 1,
-                                         Double.NEGATIVE_INFINITY,
-                                         Double.POSITIVE_INFINITY,
-                                         PlayerType.MINIMIZING_PLAYER);
+                                   final PlayerType playerType) {
+        if (playerType == PlayerType.MAXIMIZING_PLAYER) {
             
-            if (tentativeValue < value) {
-                tentativeValue = value;
-                bestMoveState = child;
-            }
-            
-            if (value > beta) {
-                break;
-            }
+            // Try to maximize the value:
+            double tentativeValue = Double.NEGATIVE_INFINITY;
+            double alpha = Double.NEGATIVE_INFINITY;
 
-            alpha = Math.max(alpha, value);
+            for (final S child : root.expand(PlayerType.MAXIMIZING_PLAYER)) {
+                double value = alphaBetaImpl(child,
+                                             depth - 1,
+                                             alpha,
+                                             Double.POSITIVE_INFINITY,
+                                             PlayerType.MINIMIZING_PLAYER);
+
+                if (tentativeValue < value) {
+                    tentativeValue = value;
+                    bestMoveState = child;
+                }
+
+                alpha = Math.max(alpha, value);
+            }
+        } else {
+            
+            double tentativeValue = Double.POSITIVE_INFINITY;
+            double beta = Double.POSITIVE_INFINITY;
+            
+            for (final S child : root.expand(PlayerType.MAXIMIZING_PLAYER)) {
+                double value = alphaBetaImpl(child,
+                                             depth - 1,
+                                             Double.NEGATIVE_INFINITY,
+                                             beta,
+                                             PlayerType.MAXIMIZING_PLAYER);
+
+                if (tentativeValue > value) {
+                    tentativeValue = value;
+                    bestMoveState = child;
+                }
+
+                beta = Math.min(beta, value);
+            }
         }
     }
     
