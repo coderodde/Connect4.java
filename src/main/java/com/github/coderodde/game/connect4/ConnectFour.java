@@ -4,8 +4,6 @@ import com.github.coderodde.game.zerosum.HeuristicFunction;
 import com.github.coderodde.game.zerosum.PlayerType;
 import java.util.Scanner;
 import com.github.coderodde.game.zerosum.SearchEngine;
-import com.github.coderodde.game.zerosum.impl.AlphaBetaPruningSearchEngine;
-import com.github.coderodde.game.zerosum.impl.ConnectFourAlphaBetaPruningSearchEngine;
 import com.github.coderodde.game.zerosum.impl.ParallelConnectFourAlphaBetaPruningSearchEngine;
 
 /**

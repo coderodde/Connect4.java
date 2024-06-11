@@ -162,12 +162,13 @@ implements SearchEngine<ConnectFourBoard> {
                 }
 
                 double value = 
-                        alphaBetaImplAboveSeedLayer(root,
-                                                    depth - 1,
-                                                    alpha,
-                                                    Double.POSITIVE_INFINITY,
-                                                    PlayerType.MINIMIZING_PLAYER,
-                                                    seedHeuristicFunction);
+                        alphaBetaImplAboveSeedLayer(
+                                root,
+                                depth - 1,
+                                alpha,
+                                Double.POSITIVE_INFINITY,
+                                PlayerType.MINIMIZING_PLAYER,
+                                seedHeuristicFunction);
 
                 if (tentativeValue < value) {
                     // Once here, we can improve the next best move:
@@ -189,7 +190,7 @@ implements SearchEngine<ConnectFourBoard> {
             
             for (int x = 0; x < COLUMNS; x++) {
                 // Try to make a ply at column 'x':
-                if (!root.makePly(x, playerType)) {
+                if (!root.makePly(x, PlayerType.MINIMIZING_PLAYER)) {
                     // The entire column at X=x is full. Omit.
                     continue;
                 }
