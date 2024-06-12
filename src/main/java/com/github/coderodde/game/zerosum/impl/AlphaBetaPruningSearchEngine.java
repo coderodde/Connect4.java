@@ -39,18 +39,15 @@ public final class AlphaBetaPruningSearchEngine<S extends GameState<S>>
     
     @Override
     public S search(final S root, final int depth) {
-        bestMoveState = null;
-        
-        alphaBetaRootImpl(root, 
-                          depth,
-                          PlayerType.MAXIMIZING_PLAYER);
-        
-        return bestMoveState;
+        return search(root, 
+                      depth,
+                      PlayerType.MAXIMIZING_PLAYER);
     }
     
     private void alphaBetaRootImpl(final S root, 
                                    final int depth,
                                    final PlayerType playerType) {
+        
         if (playerType == PlayerType.MAXIMIZING_PLAYER) {
             
             // Try to maximize the value:
@@ -76,7 +73,8 @@ public final class AlphaBetaPruningSearchEngine<S extends GameState<S>>
             double tentativeValue = Double.POSITIVE_INFINITY;
             double beta = Double.POSITIVE_INFINITY;
             
-            for (final S child : root.expand(PlayerType.MAXIMIZING_PLAYER)) {
+            for (final S child : root.expand(PlayerType.MINIMIZING_PLAYER)) {
+                
                 double value = alphaBetaImpl(child,
                                              depth - 1,
                                              Double.NEGATIVE_INFINITY,
@@ -106,15 +104,14 @@ public final class AlphaBetaPruningSearchEngine<S extends GameState<S>>
         if (playerType == PlayerType.MAXIMIZING_PLAYER) {
             double value = Double.NEGATIVE_INFINITY;
             
-            for (final S child : state.expand(playerType)) {
+            for (final S child : state.expand(PlayerType.MAXIMIZING_PLAYER)) {
                 value = Math.max(
                         value,
-                        alphaBetaImpl(
-                                child, 
-                                depth - 1,
-                                alpha,
-                                beta,
-                                PlayerType.MINIMIZING_PLAYER));
+                        alphaBetaImpl(child, 
+                                      depth - 1,
+                                      alpha,
+                                      beta,
+                                      PlayerType.MINIMIZING_PLAYER));
                 
                 if (value > beta) {
                     break;
@@ -127,15 +124,14 @@ public final class AlphaBetaPruningSearchEngine<S extends GameState<S>>
         } else {
             double value = Double.POSITIVE_INFINITY;
             
-            for (final S child : state.expand(playerType)) {
+            for (final S child : state.expand(PlayerType.MINIMIZING_PLAYER)) {
                 value = Math.min(
                         value, 
-                        alphaBetaImpl(
-                                child, 
-                                depth - 1, 
-                                alpha, 
-                                beta, 
-                                PlayerType.MAXIMIZING_PLAYER));
+                        alphaBetaImpl(child, 
+                                      depth - 1, 
+                                      alpha, 
+                                      beta, 
+                                      PlayerType.MAXIMIZING_PLAYER));
                 
                 if (value < alpha) {
                     break;

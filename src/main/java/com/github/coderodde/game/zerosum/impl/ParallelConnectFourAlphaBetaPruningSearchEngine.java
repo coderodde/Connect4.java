@@ -189,7 +189,7 @@ implements SearchEngine<ConnectFourBoard> {
             
             for (int x = 0; x < COLUMNS; x++) {
                 // Try to make a ply at column 'x':
-                if (!root.makePly(x, playerType)) {
+                if (!root.makePly(x, PlayerType.MINIMIZING_PLAYER)) {
                     // The entire column at X=x is full. Omit.
                     continue;
                 }
