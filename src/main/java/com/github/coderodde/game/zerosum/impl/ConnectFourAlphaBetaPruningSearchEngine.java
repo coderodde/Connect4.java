@@ -28,7 +28,6 @@ public final class ConnectFourAlphaBetaPruningSearchEngine
     @Override
     public ConnectFourBoard search(final ConnectFourBoard root, 
                                    final int depth) {
-        
         return search(root,
                       depth,
                       PlayerType.MAXIMIZING_PLAYER);
@@ -54,19 +53,21 @@ public final class ConnectFourAlphaBetaPruningSearchEngine
         if (playerType == PlayerType.MAXIMIZING_PLAYER) {
             
             // Try to maximize the value:
-            double tentativeValue = Double.NEGATIVE_INFINITY;
             double alpha = Double.NEGATIVE_INFINITY;
+            double value = Double.NEGATIVE_INFINITY;
+            double tentativeValue = Double.NEGATIVE_INFINITY;
             
             for (int x = 0; x < COLUMNS; x++) {
                 if (!root.makePly(x, PlayerType.MAXIMIZING_PLAYER)) {
                     continue;
                 }
 
-                double value = alphaBetaImpl(root,
-                                             depth - 1,
-                                             alpha,
-                                             Double.POSITIVE_INFINITY,
-                                             PlayerType.MINIMIZING_PLAYER);
+                value = Math.max(value,
+                                 alphaBetaImpl(root,
+                                               depth - 1,
+                                               alpha,
+                                               Double.POSITIVE_INFINITY,
+                                               PlayerType.MINIMIZING_PLAYER));
                 
                 if (tentativeValue < value) {
                     tentativeValue = value;
@@ -79,19 +80,21 @@ public final class ConnectFourAlphaBetaPruningSearchEngine
             }
         } else {
             
-            double tentativeValue = Double.POSITIVE_INFINITY;
             double beta = Double.POSITIVE_INFINITY;
+            double value = Double.POSITIVE_INFINITY;
+            double tentativeValue = Double.POSITIVE_INFINITY;
             
             for (int x = 0; x < COLUMNS; x++) {
                 if (!root.makePly(x, PlayerType.MINIMIZING_PLAYER)) {
                     continue;
                 }
 
-                double value = alphaBetaImpl(root,
-                                             depth - 1,
-                                             Double.NEGATIVE_INFINITY,
-                                             beta,
-                                             PlayerType.MAXIMIZING_PLAYER);
+                value = Math.min(value,
+                                 alphaBetaImpl(root,
+                                               depth - 1,
+                                               Double.NEGATIVE_INFINITY,
+                                               beta,
+                                               PlayerType.MAXIMIZING_PLAYER));
 
                 if (tentativeValue > value) {
                     tentativeValue = value;

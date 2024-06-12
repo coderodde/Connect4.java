@@ -50,16 +50,19 @@ public final class AlphaBetaPruningSearchEngine<S extends GameState<S>>
         
         if (playerType == PlayerType.MAXIMIZING_PLAYER) {
             
-            // Try to maximize the value:
-            double tentativeValue = Double.NEGATIVE_INFINITY;
+            // Try to maximize the alpha:
             double alpha = Double.NEGATIVE_INFINITY;
+            double value = Double.NEGATIVE_INFINITY;
+            double tentativeValue = Double.NEGATIVE_INFINITY;
 
             for (final S child : root.expand(PlayerType.MAXIMIZING_PLAYER)) {
-                double value = alphaBetaImpl(child,
-                                             depth - 1,
-                                             alpha,
-                                             Double.POSITIVE_INFINITY,
-                                             PlayerType.MINIMIZING_PLAYER);
+                
+                value = Math.max(value, 
+                                 alphaBetaImpl(child,
+                                               depth - 1,
+                                               alpha,
+                                               Double.POSITIVE_INFINITY,
+                                               PlayerType.MINIMIZING_PLAYER));
 
                 if (tentativeValue < value) {
                     tentativeValue = value;
@@ -70,16 +73,18 @@ public final class AlphaBetaPruningSearchEngine<S extends GameState<S>>
             }
         } else {
             
-            double tentativeValue = Double.POSITIVE_INFINITY;
             double beta = Double.POSITIVE_INFINITY;
+            double value = Double.POSITIVE_INFINITY;
+            double tentativeValue = Double.POSITIVE_INFINITY;
             
             for (final S child : root.expand(PlayerType.MINIMIZING_PLAYER)) {
                 
-                double value = alphaBetaImpl(child,
-                                             depth - 1,
-                                             Double.NEGATIVE_INFINITY,
-                                             beta,
-                                             PlayerType.MAXIMIZING_PLAYER);
+                value = Math.min(value,
+                                 alphaBetaImpl(child,
+                                               depth - 1,
+                                               Double.NEGATIVE_INFINITY,
+                                               beta,
+                                               PlayerType.MAXIMIZING_PLAYER));
 
                 if (tentativeValue > value) {
                     tentativeValue = value;
@@ -105,14 +110,13 @@ public final class AlphaBetaPruningSearchEngine<S extends GameState<S>>
             double value = Double.NEGATIVE_INFINITY;
             
             for (final S child : state.expand(PlayerType.MAXIMIZING_PLAYER)) {
-                value = Math.max(
-                        value,
-                        alphaBetaImpl(child, 
-                                      depth - 1,
-                                      alpha,
-                                      beta,
-                                      PlayerType.MINIMIZING_PLAYER));
                 
+                value = Math.max(value,
+                                 alphaBetaImpl(child, 
+                                               depth - 1,
+                                               alpha,
+                                               beta,
+                                               PlayerType.MINIMIZING_PLAYER));
                 if (value > beta) {
                     break;
                 }
@@ -125,13 +129,13 @@ public final class AlphaBetaPruningSearchEngine<S extends GameState<S>>
             double value = Double.POSITIVE_INFINITY;
             
             for (final S child : state.expand(PlayerType.MINIMIZING_PLAYER)) {
-                value = Math.min(
-                        value, 
-                        alphaBetaImpl(child, 
-                                      depth - 1, 
-                                      alpha, 
-                                      beta, 
-                                      PlayerType.MAXIMIZING_PLAYER));
+                
+                value = Math.min(value, 
+                                 alphaBetaImpl(child, 
+                                               depth - 1, 
+                                               alpha, 
+                                               beta, 
+                                               PlayerType.MAXIMIZING_PLAYER));
                 
                 if (value < alpha) {
                     break;
