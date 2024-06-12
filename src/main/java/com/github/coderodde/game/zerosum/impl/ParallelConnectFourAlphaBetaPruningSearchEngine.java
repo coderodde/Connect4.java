@@ -13,7 +13,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
+ * This class implements the parallel Alpha-beta pruning for playing Connect 
+ * Four.
+ * 
  * @version 1.0.0 (Jun 7, 2024) 
  * @since 1.0.0 (Jun 7, 2024)
  */
@@ -151,7 +153,7 @@ implements SearchEngine<ConnectFourBoard> {
         
         if (playerType == PlayerType.MAXIMIZING_PLAYER) {
             
-            double tentativeValue = Double.NEGATIVE_INFINITY;
+            double value = Double.NEGATIVE_INFINITY;
             double alpha = Double.NEGATIVE_INFINITY;
 
             for (int x = 0; x < COLUMNS; x++) {
@@ -161,31 +163,29 @@ implements SearchEngine<ConnectFourBoard> {
                     continue;
                 }
 
-                double value = 
-                        alphaBetaImplAboveSeedLayer(root,
-                                                    depth - 1,
-                                                    alpha,
-                                                    Double.POSITIVE_INFINITY,
-                                                    PlayerType.MINIMIZING_PLAYER,
-                                                    seedHeuristicFunction);
-
-                if (tentativeValue < value) {
-                    // Once here, we can improve the next best move:
-                    tentativeValue = value;
-                    // Copy the current state of 'root' to the 'bestMoveState':
+                value = Math.max(
+                                value,
+                                alphaBetaImplAboveSeedLayer(
+                                        root,
+                                        depth - 1,
+                                        alpha,
+                                        Double.POSITIVE_INFINITY,
+                                        PlayerType.MINIMIZING_PLAYER,
+                                        seedHeuristicFunction));
+                
+                if (alpha < value) {
+                    alpha = value;
                     bestMoveState = new ConnectFourBoard(root);
                 }
-
+                
                 // Undo the previously made ply:
                 root.unmakePly(x);
-
-                alpha = Math.max(alpha, value);
             }
         
             return bestMoveState;
         } else {
-            double tentativeValue = Double.POSITIVE_INFINITY;
-            double beta = Double.POSITIVE_INFINITY;
+            double value = Double.POSITIVE_INFINITY;
+            double beta  = Double.POSITIVE_INFINITY;
             
             for (int x = 0; x < COLUMNS; x++) {
                 // Try to make a ply at column 'x':
@@ -194,24 +194,22 @@ implements SearchEngine<ConnectFourBoard> {
                     continue;
                 }
                 
-                double value = 
-                        alphaBetaImplAboveSeedLayer(
-                                root,
-                                depth - 1,
-                                Double.NEGATIVE_INFINITY,
-                                beta,
-                                PlayerType.MAXIMIZING_PLAYER,
-                                seedHeuristicFunction);
+                value = Math.min(value,
+                                 alphaBetaImplAboveSeedLayer(
+                                        root,
+                                        depth - 1,
+                                        Double.NEGATIVE_INFINITY,
+                                        beta,
+                                        PlayerType.MAXIMIZING_PLAYER,
+                                        seedHeuristicFunction));
                 
-                if (tentativeValue > value) {
-                    tentativeValue = value;
+                if (beta > value) {
+                    beta = value;
                     bestMoveState = new ConnectFourBoard(root);
                 }
                 
                 // Undo the previously made ply:
                 root.unmakePly(x);
-                
-                beta = Math.min(beta, value);
             }
         }
             
