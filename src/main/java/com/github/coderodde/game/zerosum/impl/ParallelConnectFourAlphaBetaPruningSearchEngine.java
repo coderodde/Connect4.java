@@ -153,8 +153,9 @@ implements SearchEngine<ConnectFourBoard> {
         
         if (playerType == PlayerType.MAXIMIZING_PLAYER) {
             
-            double value = Double.NEGATIVE_INFINITY;
             double alpha = Double.NEGATIVE_INFINITY;
+            double value = Double.NEGATIVE_INFINITY;
+            double tentativeValue = Double.NEGATIVE_INFINITY;
 
             for (int x = 0; x < COLUMNS; x++) {
                 // Try to make a ply at column 'x':
@@ -163,29 +164,33 @@ implements SearchEngine<ConnectFourBoard> {
                     continue;
                 }
 
-                value = Math.max(
-                                value,
-                                alphaBetaImplAboveSeedLayer(
-                                        root,
-                                        depth - 1,
-                                        alpha,
-                                        Double.POSITIVE_INFINITY,
-                                        PlayerType.MINIMIZING_PLAYER,
-                                        seedHeuristicFunction));
+                value = Math.max(value,
+                                 alphaBetaImplAboveSeedLayer(
+                                         root,
+                                         depth - 1,
+                                         alpha,
+                                         Double.POSITIVE_INFINITY,
+                                         PlayerType.MINIMIZING_PLAYER,
+                                         seedHeuristicFunction));
                 
-                if (alpha < value) {
-                    alpha = value;
+                if (tentativeValue < value) {
+                    tentativeValue = value;
                     bestMoveState = new ConnectFourBoard(root);
                 }
                 
                 // Undo the previously made ply:
                 root.unmakePly(x);
+                
+                // Possibly raise alpha:
+                alpha = Math.max(alpha, value);
             }
         
             return bestMoveState;
         } else {
-            double value = Double.POSITIVE_INFINITY;
+            
             double beta  = Double.POSITIVE_INFINITY;
+            double value = Double.POSITIVE_INFINITY;
+            double tentativeValue = Double.POSITIVE_INFINITY;
             
             for (int x = 0; x < COLUMNS; x++) {
                 // Try to make a ply at column 'x':
@@ -203,13 +208,16 @@ implements SearchEngine<ConnectFourBoard> {
                                         PlayerType.MAXIMIZING_PLAYER,
                                         seedHeuristicFunction));
                 
-                if (beta > value) {
-                    beta = value;
+                if (tentativeValue > value) {
+                    tentativeValue = value;
                     bestMoveState = new ConnectFourBoard(root);
                 }
                 
                 // Undo the previously made ply:
                 root.unmakePly(x);
+                
+                // Possibly lower beta:
+                beta = Math.min(beta, value);
             }
         }
             
