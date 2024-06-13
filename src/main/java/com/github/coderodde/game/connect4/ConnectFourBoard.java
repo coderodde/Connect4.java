@@ -313,10 +313,10 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
             final int length) {
         
         final int lastX = COLUMNS - length;
-        final int lastY = ROWS - length;
+        final int lastY = length;
         final List<Point> winningPattern = new ArrayList<>(length);
         
-        for (int y = ROWS - 1; y > lastY; y--) {
+        for (int y = ROWS - 1; y >= lastY; y--) {
             diagonalCheck:
             for (int x = 0; x <= lastX; x++) {
                 for (int i = 0; i < length; i++) {
