@@ -343,7 +343,13 @@ public final class ConnectFourBoardTest {
         
         final List<Point> winningPattern = b.getWinningPattern();
         
-        System.out.println(winningPattern.size());
+        assertNotNull(winningPattern);
+        assertEquals(4, winningPattern.size());
+        
+        assertEquals(new Point(6, 5), winningPattern.get(0));
+        assertEquals(new Point(5, 4), winningPattern.get(1));
+        assertEquals(new Point(4, 3), winningPattern.get(2));
+        assertEquals(new Point(3, 2), winningPattern.get(3));
     }
     
     @Test
@@ -375,5 +381,100 @@ public final class ConnectFourBoardTest {
         
         assertFalse(b1.equals(b2));
         assertFalse(b2.equals(b1));
+    }
+    
+    @Test
+    public void sevenInRowHorizontalWinningPattern() {
+        ConnectFourBoard b = new ConnectFourBoard();
+        
+        for (int x = 0; x < COLUMNS; x++) {
+            b.makePly(x, PlayerType.MINIMIZING_PLAYER);
+            b.makePly(x, PlayerType.MAXIMIZING_PLAYER);
+        }
+        
+        b.unmakePly(6);
+
+        List<Point> winningPattern = b.getWinningPattern();
+        
+        assertNotNull(winningPattern);
+        
+        assertEquals(new Point(0, 5), winningPattern.get(0));
+        assertEquals(new Point(1, 5), winningPattern.get(1));
+        assertEquals(new Point(2, 5), winningPattern.get(2));
+        assertEquals(new Point(3, 5), winningPattern.get(3));
+        assertEquals(new Point(4, 5), winningPattern.get(4));
+        assertEquals(new Point(5, 5), winningPattern.get(5));
+        assertEquals(new Point(6, 5), winningPattern.get(6));
+    }
+    
+    @Test
+    public void sixInRowVerticalWinningPattern() {
+        ConnectFourBoard b = new ConnectFourBoard();
+        
+        for (int y = 0; y < 5; y++) {
+            b.makePly(2, PlayerType.MAXIMIZING_PLAYER);
+            b.makePly(3, PlayerType.MINIMIZING_PLAYER);
+        }
+        
+        b.makePly(2, PlayerType.MAXIMIZING_PLAYER);
+        
+        List<Point> winningPattern = b.getWinningPattern();
+        
+        assertNotNull(winningPattern);
+        
+        assertEquals(new Point(2, 0), winningPattern.get(0));
+        assertEquals(new Point(2, 1), winningPattern.get(1));
+        assertEquals(new Point(2, 2), winningPattern.get(2));
+        assertEquals(new Point(2, 3), winningPattern.get(3));
+        assertEquals(new Point(2, 4), winningPattern.get(4));
+        assertEquals(new Point(2, 5), winningPattern.get(5));
+    }
+    
+    @Test
+    public void sixInRowAscendingWinningPattern() {
+        ConnectFourBoard b = new ConnectFourBoard();
+        
+        for (int x = 0; x < 6; x++) {
+            for (int y = 0; y < x; y++) {
+                b.makePly(x, PlayerType.MINIMIZING_PLAYER);
+            }
+            
+            b.makePly(x, PlayerType.MAXIMIZING_PLAYER);
+        }
+        
+        List<Point> winningPattern = b.getWinningPattern();
+        
+        assertNotNull(winningPattern);
+        
+        assertEquals(new Point(0, 5), winningPattern.get(0));
+        assertEquals(new Point(1, 4), winningPattern.get(1));
+        assertEquals(new Point(2, 3), winningPattern.get(2));
+        assertEquals(new Point(3, 2), winningPattern.get(3));
+        assertEquals(new Point(4, 1), winningPattern.get(4));
+        assertEquals(new Point(5, 0), winningPattern.get(5));
+    }
+    
+    @Test
+    public void sixInRowDescendingWinningPattern() {
+        ConnectFourBoard b = new ConnectFourBoard();
+        
+        for (int x = 0; x < 6; x++) {
+            for (int y = 0; y < 5 - x; y++) {
+                b.makePly(x, PlayerType.MINIMIZING_PLAYER);
+            }
+            
+            b.makePly(x, PlayerType.MAXIMIZING_PLAYER);
+        }
+        
+        List<Point> winningPattern = b.getWinningPattern();
+        
+        assertNotNull(winningPattern);
+        
+        assertEquals(new Point(5, 5), winningPattern.get(0));
+        assertEquals(new Point(4, 4), winningPattern.get(1));
+        assertEquals(new Point(3, 3), winningPattern.get(2));
+        assertEquals(new Point(2, 2), winningPattern.get(3));
+        assertEquals(new Point(1, 1), winningPattern.get(4));
+        assertEquals(new Point(0, 0), winningPattern.get(5));
     }
 }

@@ -112,62 +112,83 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
             return null;
         }
         
-        // Check whether the minimizing/human player has a winning pattern:
-        List<Point> winningPattern =
-                tryLoadAscendingWinningPattern(PlayerType.MINIMIZING_PLAYER);
+        List<Point> winningPattern = null;
         
-        if (winningPattern != null) {
-            return winningPattern;
+        for (int length = ROWS; length >= VICTORY_LENGTH; length--) {
+        
+            // Try load the vertical winning pattern:
+            winningPattern = 
+                    tryLoadVerticalWinningPattern(PlayerType.MINIMIZING_PLAYER,
+                                                  length);
+
+            if (winningPattern != null) {
+                return winningPattern;
+            }
+        
+            winningPattern = 
+                    tryLoadVerticalWinningPattern(PlayerType.MAXIMIZING_PLAYER, 
+                                                  length);
+
+            if (winningPattern != null) {
+                return winningPattern;
+            }
+            
+            // Try to load the ascending winning pattern:
+            winningPattern =
+                tryLoadAscendingWinningPattern(PlayerType.MINIMIZING_PLAYER,
+                                               length);
+        
+            if (winningPattern != null) {
+                return winningPattern;
+            }
+            
+            winningPattern =
+                tryLoadAscendingWinningPattern(PlayerType.MAXIMIZING_PLAYER,
+                                               length);
+        
+            if (winningPattern != null) {
+                return winningPattern;
+            }
+
+            // Try to load the descending winning pattern:
+            winningPattern = 
+                    tryLoadDescendingWinningPattern(
+                            PlayerType.MINIMIZING_PLAYER,
+                            length);
+
+            if (winningPattern != null) {
+                return winningPattern;
+            }
+
+            winningPattern = 
+                    tryLoadDescendingWinningPattern(
+                            PlayerType.MAXIMIZING_PLAYER,
+                            length);
+            
+            if (winningPattern != null) {
+                return winningPattern;
+            }
         }
-        
-        winningPattern = 
-                tryLoadDescendingWinningPattern(PlayerType.MINIMIZING_PLAYER);
-        
-        if (winningPattern != null) {
-            return winningPattern;
-        }
-        
-        winningPattern = 
-                tryLoadHorizontalWinningPattern(PlayerType.MINIMIZING_PLAYER);
-        
-        if (winningPattern != null) {
-            return winningPattern;
-        }
-        
-        winningPattern = 
-                tryLoadVerticalWinningPattern(PlayerType.MINIMIZING_PLAYER);
-        
-        if (winningPattern != null) {
-            return winningPattern;
-        }
-        
-        // Check whether the maximizing/CPU player has a winning pattern:
-        winningPattern =
-                tryLoadAscendingWinningPattern(PlayerType.MAXIMIZING_PLAYER);
-        
-        if (winningPattern != null) {
-            return winningPattern;
-        }
-        
-        winningPattern = 
-                tryLoadDescendingWinningPattern(PlayerType.MAXIMIZING_PLAYER);
-        
-        if (winningPattern != null) {
-            return winningPattern;
-        }
-        
-        winningPattern = 
-                tryLoadHorizontalWinningPattern(PlayerType.MAXIMIZING_PLAYER);
-        
-        if (winningPattern != null) {
-            return winningPattern;
-        }
-        
-        winningPattern = 
-                tryLoadVerticalWinningPattern(PlayerType.MAXIMIZING_PLAYER);
-        
-        if (winningPattern != null) {
-            return winningPattern;
+
+        for (int length = COLUMNS; length >= VICTORY_LENGTH; length--) {
+            
+            winningPattern = 
+                    tryLoadHorizontalWinningPattern(
+                            PlayerType.MINIMIZING_PLAYER,
+                            length);
+            
+            if (winningPattern != null) {
+                return winningPattern;
+            }
+            
+            winningPattern = 
+                    tryLoadHorizontalWinningPattern(
+                            PlayerType.MAXIMIZING_PLAYER,
+                            length);
+            
+            if (winningPattern != null) {
+                return winningPattern;
+            }
         }
         
         throw new IllegalStateException("Should not get here.");
@@ -288,20 +309,21 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
     }
     
     private List<Point> tryLoadAscendingWinningPattern(
-            final PlayerType playerType) {
+            final PlayerType playerType,
+            final int length) {
         
-        final int lastX = COLUMNS - VICTORY_LENGTH;
-        final int lastY = ROWS - VICTORY_LENGTH;
-        final List<Point> winningPattern = new ArrayList<>(VICTORY_LENGTH);
+        final int lastX = COLUMNS - length;
+        final int lastY = ROWS - length;
+        final List<Point> winningPattern = new ArrayList<>(length);
         
         for (int y = ROWS - 1; y > lastY; y--) {
             diagonalCheck:
             for (int x = 0; x <= lastX; x++) {
-                for (int i = 0; i < VICTORY_LENGTH; i++) {
+                for (int i = 0; i < length; i++) {
                     if (get(x + i, y - i) == playerType) {
                         winningPattern.add(new Point(x + i, y - i));
                         
-                        if (winningPattern.size() == VICTORY_LENGTH) {
+                        if (winningPattern.size() == length) {
                             return winningPattern;
                         }
                     } else {
@@ -316,20 +338,21 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
     }
     
     private List<Point> tryLoadDescendingWinningPattern(
-            final PlayerType playerType) {
+            final PlayerType playerType,
+            final int length) {
         
-        final int firstX = COLUMNS - VICTORY_LENGTH;
-        final int lastY = ROWS - VICTORY_LENGTH;
-        final List<Point> winningPattern = new ArrayList<>(VICTORY_LENGTH);
+        final int firstX = length - 1;
+        final int lastY = ROWS - length;
+        final List<Point> winningPattern = new ArrayList<>(length);
         
         for (int y = ROWS - 1; y > lastY; y--) {
             diagonalCheck:
             for (int x = firstX; x < COLUMNS; x++) {
-                for (int i = 0; i < VICTORY_LENGTH; i++) {
+                for (int i = 0; i < length; i++) {
                     if (get(x - i, y - i) == playerType) {
                         winningPattern.add(new Point(x - i, y - i));
                         
-                        if (winningPattern.size() == VICTORY_LENGTH) {
+                        if (winningPattern.size() == length) {
                             return winningPattern;
                         }
                     } else {
@@ -344,19 +367,20 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
     }
     
     private List<Point> tryLoadHorizontalWinningPattern(
-            final PlayerType playerType) {
+            final PlayerType playerType,
+            final int length) {
         
-        final int lastX = COLUMNS - VICTORY_LENGTH;
-        final List<Point> winningPattern = new ArrayList<>(VICTORY_LENGTH);
+        final int lastX = COLUMNS - length;
+        final List<Point> winningPattern = new ArrayList<>(length);
         
         for (int y = ROWS - 1; y >= 0; y--) {
             horizontalCheck:
             for (int x = 0; x <= lastX; x++) {
-                for (int i = 0; i < VICTORY_LENGTH; i++) {
+                for (int i = 0; i < length; i++) {
                     if (get(x + i, y) == playerType) {
                         winningPattern.add(new Point(x + i, y));
                         
-                        if (winningPattern.size() == VICTORY_LENGTH) {
+                        if (winningPattern.size() == length) {
                             return winningPattern;
                         }
                     } else {
@@ -371,19 +395,20 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
     }
     
     private List<Point> tryLoadVerticalWinningPattern(
-            final PlayerType playerType) {
+            final PlayerType playerType,
+            final int length) {
         
-        final int lastY = ROWS - VICTORY_LENGTH;
-        final List<Point> winningPattern = new ArrayList<>(VICTORY_LENGTH);
+        final int lastY = ROWS - length;
+        final List<Point> winningPattern = new ArrayList<>(length);
         
         for (int x = 0; x < COLUMNS; x++) {
             verticalCheck:
             for (int y = 0; y <= lastY; y++) {
-                for (int i = 0; i < VICTORY_LENGTH; i++) {
+                for (int i = 0; i < length; i++) {
                     if (get(x, y + i) == playerType) {
                         winningPattern.add(new Point(x, y + i));
                         
-                        if (winningPattern.size() == VICTORY_LENGTH) {
+                        if (winningPattern.size() == length) {
                             return winningPattern;
                         }
                     } else {
