@@ -84,7 +84,7 @@ public class ConnectFourSearchEngineComparison {
         final int ENGINE1_DEPTH = 9;
         final int ENGINE2_DEPTH = 8;
         
-        System.out.printf("Serial AI depth: %d\n", ENGINE1_DEPTH);
+        System.out.printf("Serial AI depth:   %d\n", ENGINE1_DEPTH);
         System.out.printf("Parallel AI depth: %d\n", ENGINE2_DEPTH);
         
         while (true) {
