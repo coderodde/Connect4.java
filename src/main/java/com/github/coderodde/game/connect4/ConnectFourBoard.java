@@ -268,9 +268,9 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
                                        final int length) {
         
         final int lastX = COLUMNS - length;
-        final int lastY = ROWS - length;
+        final int lastY = length - 1;
         
-        for (int y = ROWS - 1; y > lastY; y--) {
+        for (int y = ROWS - 1; y >= lastY; y--) {
             diagonalCheck:
             for (int x = 0; x <= lastX; x++) {
                 for (int i = 0; i < length; i++) {
@@ -289,10 +289,10 @@ public class ConnectFourBoard implements GameState<ConnectFourBoard> {
     boolean hasDescendingDiagonalStrike(final PlayerType playerType, 
                                         final int length) {
         
-        final int firstX = COLUMNS - length;
-        final int lastY = ROWS - length;
+        final int firstX = length - 1;
+        final int lastY  = length - 1;
         
-        for (int y = ROWS - 1; y > lastY; y--) {
+        for (int y = ROWS - 1; y >= lastY; y--) {
             diagonalCheck:
             for (int x = firstX; x < COLUMNS; x++) {
                 for (int i = 0; i < length; i++) {
