@@ -2,6 +2,7 @@ package com.github.coderodde.game.zerosum.impl;
 
 import com.github.coderodde.game.connect4.ConnectFourBoard;
 import static com.github.coderodde.game.connect4.ConnectFourBoard.COLUMNS;
+import com.github.coderodde.game.connect4.SearchProgress;
 import com.github.coderodde.game.zerosum.PlayerType;
 import com.github.coderodde.game.zerosum.HeuristicFunction;
 import com.github.coderodde.game.zerosum.SearchEngine;
@@ -19,6 +20,7 @@ public final class ConnectFourAlphaBetaPruningSearchEngine
 
     private ConnectFourBoard bestMoveState;
     private final HeuristicFunction<ConnectFourBoard> heuristicFunction;
+    private SearchProgress searchProgress;
     
     public ConnectFourAlphaBetaPruningSearchEngine(
             final HeuristicFunction<ConnectFourBoard> heuristicFunction) {
@@ -37,6 +39,11 @@ public final class ConnectFourAlphaBetaPruningSearchEngine
     public ConnectFourBoard search(final ConnectFourBoard root,
                                    int depth, 
                                    final PlayerType playerType) {
+        
+        if (searchProgress != null) {
+            searchProgress.clear();
+        }
+        
         bestMoveState = null;
         
         alphaBetaRootImpl(root, 
@@ -44,6 +51,10 @@ public final class ConnectFourAlphaBetaPruningSearchEngine
                           playerType);
         
         return bestMoveState;
+    }
+    
+    public void setSearchProgress(final SearchProgress searchProgress) {
+        this.searchProgress = searchProgress;
     }
     
     private void alphaBetaRootImpl(final ConnectFourBoard root, 
@@ -115,6 +126,11 @@ public final class ConnectFourAlphaBetaPruningSearchEngine
                                  final PlayerType playerType) {
 
         if (depth == 0 || state.isTerminal()) {
+            if (searchProgress != null) {
+                searchProgress.hit();
+                searchProgress.setProgressBarValue();
+            }
+            
             return heuristicFunction.evaluate(state, depth);
         }
         
