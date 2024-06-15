@@ -17,10 +17,13 @@ import com.github.coderodde.game.zerosum.SearchEngine;
  */
 public final class ConnectFourAlphaBetaPruningSearchEngine
         implements SearchEngine<ConnectFourBoard> {
+    
+    private static final int PROGRESS_DEPTH = 2;
 
     private ConnectFourBoard bestMoveState;
     private final HeuristicFunction<ConnectFourBoard> heuristicFunction;
     private SearchProgress searchProgress;
+    private int requestedDepth;
     
     public ConnectFourAlphaBetaPruningSearchEngine(
             final HeuristicFunction<ConnectFourBoard> heuristicFunction) {
@@ -39,6 +42,8 @@ public final class ConnectFourAlphaBetaPruningSearchEngine
     public ConnectFourBoard search(final ConnectFourBoard root,
                                    int depth, 
                                    final PlayerType playerType) {
+        
+        this.requestedDepth = depth;
         
         if (searchProgress != null) {
             searchProgress.clear();
@@ -125,12 +130,14 @@ public final class ConnectFourAlphaBetaPruningSearchEngine
                                  double beta,
                                  final PlayerType playerType) {
 
-        if (depth == 0 || state.isTerminal()) {
+        if (requestedDepth - depth == PROGRESS_DEPTH) {
             if (searchProgress != null) {
                 searchProgress.hit();
                 searchProgress.setProgressBarValue();
             }
-            
+        }
+        
+        if (depth == 0 || state.isTerminal()) {
             return heuristicFunction.evaluate(state, depth);
         }
         

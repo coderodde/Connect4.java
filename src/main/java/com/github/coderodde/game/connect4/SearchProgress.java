@@ -1,6 +1,7 @@
 package com.github.coderodde.game.connect4;
 
 import static com.github.coderodde.game.connect4.ConnectFourBoard.COLUMNS;
+import javafx.application.Platform;
 import javafx.scene.control.ProgressBar;
 
 /**
@@ -34,14 +35,16 @@ public final class SearchProgress {
     }
     
     public void setProgressBarValue() {
-        this.progressBar.setProgress(getProgressValue(this));
+        Platform.runLater(() -> {
+            progressBar.setProgress(getProgressValue());
+        });
     }
     
-    public static double getProgressValue(final SearchProgress searchProgress) {
+    public double getProgressValue() {
         final double completionRatio = 20.0 *
-               ((double) searchProgress.currentNumberOfStatesDiscovered) /
-               ((double) searchProgress.maximumNumberOfStates);
-//        System.out.println("completionRatio: " + 20.0 * completionRatio);
+               ((double) currentNumberOfStatesDiscovered) /
+               ((double) maximumNumberOfStates);
+        
         return completionRatio;
     }
 }
