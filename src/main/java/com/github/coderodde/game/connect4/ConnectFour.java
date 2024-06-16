@@ -4,6 +4,7 @@ import com.github.coderodde.game.zerosum.HeuristicFunction;
 import com.github.coderodde.game.zerosum.PlayerType;
 import java.util.Scanner;
 import com.github.coderodde.game.zerosum.SearchEngine;
+import com.github.coderodde.game.zerosum.impl.ConnectFourNegamaxSearchEngine;
 import com.github.coderodde.game.zerosum.impl.ParallelConnectFourAlphaBetaPruningSearchEngine;
 
 /**
@@ -14,11 +15,11 @@ import com.github.coderodde.game.zerosum.impl.ParallelConnectFourAlphaBetaPrunin
  */
 public class ConnectFour {
    
-    private static final int DEFAULT_DEPTH = 8;
+    private static final int DEFAULT_DEPTH = 2;
     private static final int MINIMUM_DEPTH = 1;
 
     public static void main(String[] args) {
-        final int depth = parseDepth(args);
+        final int depth = 2; //parseDepth(args);
         
         System.out.printf(">>> Using search depth: %d.\n", depth);
         
@@ -27,9 +28,12 @@ public class ConnectFour {
                 new ConnectFourHeuristicFunction();
         
         final SearchEngine<ConnectFourBoard> bot = 
-                new ParallelConnectFourAlphaBetaPruningSearchEngine(
-                        heuristicFunction, 
-                        2);
+                new ConnectFourNegamaxSearchEngine(heuristicFunction);
+        
+//        final SearchEngine<ConnectFourBoard> bot = 
+//                new ParallelConnectFourAlphaBetaPruningSearchEngine(
+//                        heuristicFunction, 
+//                        2);
         
         ConnectFourBoard currentBoard = new ConnectFourBoard();
         
