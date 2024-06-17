@@ -11,11 +11,13 @@ import com.github.coderodde.game.zerosum.impl.ParallelConnectFourAlphaBetaPrunin
 
 public class ConnectFourSearchEngineComparison {
     
-    private static final int DEPTH = 2;
+    private static final int DEPTH = 10;
     private static final int SEED_DEPTH = 2;
+    private static final int ALPHA_BETA_PRUNING_ENGINE_DEPTH = 9;
+    private static final int NEGAMAX_ENGINE_DEPTH = 9;
 
     public static void main(String[] args) {
-        ConnectFourBoard b = new ConnectFourBoard();
+        final ConnectFourBoard b = new ConnectFourBoard();
         ConnectFourBoard r;
         ConnectFourHeuristicFunction heuristicFunction = 
                 new ConnectFourHeuristicFunction();
@@ -32,8 +34,6 @@ public class ConnectFourSearchEngineComparison {
         
         System.out.println(r);
         
-        b = new ConnectFourBoard();
-        
         startTime = System.currentTimeMillis();
         
         r = new ConnectFourAlphaBetaPruningSearchEngine(heuristicFunction)
@@ -46,8 +46,6 @@ public class ConnectFourSearchEngineComparison {
                 endTime - startTime);
         
         System.out.println(r);
-        
-        b = new ConnectFourBoard();
         
         startTime = System.currentTimeMillis();
         
@@ -80,7 +78,9 @@ public class ConnectFourSearchEngineComparison {
         
         System.out.println(r);
         
-        System.out.println("<<< AI vs. AI >>>");
+        System.out.println();
+        System.out.println("<<< ConnnectFourAlphaBetaPruningSearchEngine vs. " + 
+                           "ConnectFourNegamaxSearchEngine >>>");
         
         long duration1 = 0L;
         long duration2 = 0L;
@@ -95,25 +95,22 @@ public class ConnectFourSearchEngineComparison {
         ConnectFourBoard board = new ConnectFourBoard();
         System.out.println(board);
         
-        final int ENGINE1_DEPTH = 2;
-        final int ENGINE2_DEPTH = 2;
-        
         System.out.printf(
                 "ConnectFourAlphaBetaPruningSearchEngine depth:   %d\n",
-                ENGINE1_DEPTH);
+                ALPHA_BETA_PRUNING_ENGINE_DEPTH);
         
         System.out.printf(
                 "ConnectFourNegamaxSearchEngine depth:            %d\n", 
-                ENGINE2_DEPTH);
+                NEGAMAX_ENGINE_DEPTH);
         
         while (true) {
             
-            // Serial search engine makes a ply first per round:
+            // Alpha-beta pruning search engine makes a ply first per round:
             startTime = System.currentTimeMillis();
             
             board = engine1.search(board,
-                                   ENGINE1_DEPTH,
-                                   PlayerType.MAXIMIZING_PLAYER);
+                                   ALPHA_BETA_PRUNING_ENGINE_DEPTH,
+                                   PlayerType.MINIMIZING_PLAYER);
             
             endTime = System.currentTimeMillis();
             
@@ -124,7 +121,7 @@ public class ConnectFourSearchEngineComparison {
             System.out.println(board);
             
             System.out.printf(
-                    "Alpha-beta pruning engine in %d milliseconds.\n",
+                    "Alpha-beta pruning engine (X) in %d milliseconds.\n",
                     duration);
             
             if (board.isTerminal()) {
@@ -135,8 +132,8 @@ public class ConnectFourSearchEngineComparison {
             startTime = System.currentTimeMillis();
             
             board = engine2.search(board, 
-                                   ENGINE2_DEPTH,
-                                   PlayerType.MINIMIZING_PLAYER);
+                                   NEGAMAX_ENGINE_DEPTH,
+                                   PlayerType.MAXIMIZING_PLAYER);
             
             endTime = System.currentTimeMillis();
             
@@ -147,7 +144,7 @@ public class ConnectFourSearchEngineComparison {
             System.out.println(board);
             
             System.out.printf(
-                    "Negamax engine in %d milliseconds.\n", 
+                    "Negamax engine (O) in %d milliseconds.\n", 
                     duration);
             
             if (board.isTerminal()) {
@@ -157,11 +154,11 @@ public class ConnectFourSearchEngineComparison {
         }
         
         System.out.printf(
-                "Serial engine in total %d milliseconds.\n", 
+                "Alpha-beta pruning engine in total %d milliseconds.\n", 
                 duration1);
         
         System.out.printf(
-                "Parallel engine in total %d milliseconds.\n", 
+                "Negamax engine in total %d milliseconds.\n", 
                 duration2);
     }
     
@@ -171,11 +168,11 @@ public class ConnectFourSearchEngineComparison {
         } else if (connectFourBoard
                 .isWinningFor(PlayerType.MINIMIZING_PLAYER)) {
             
-            System.out.println("RESULT: Parallel engine wins.");
+            System.out.println("RESULT: Alpha-beta engine wins.");
         } else if (connectFourBoard
                 .isWinningFor(PlayerType.MAXIMIZING_PLAYER)) {
             
-            System.out.println("RESULT: Serial engine wins.");
+            System.out.println("RESULT: Negamax engine wins.");
         } else {
             
             throw new IllegalStateException("Should not get here.");

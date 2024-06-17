@@ -69,13 +69,14 @@ public final class ConnectFourNegamaxSearchEngine implements SearchEngine<Connec
                              -alpha,
                              -color);
             
+            
             if (color == +1) {
-                if (value > score) {
+                if (value < score) {
                     value = score;
                     bestMoveState = new ConnectFourBoard(root);
                 }
             } else {
-                if (value < score) {
+                if (value > score) {
                     value = score;
                     bestMoveState = new ConnectFourBoard(root);
                 }
