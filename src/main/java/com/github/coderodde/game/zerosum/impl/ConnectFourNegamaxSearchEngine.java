@@ -30,16 +30,16 @@ public final class ConnectFourNegamaxSearchEngine implements SearchEngine<Connec
         
         if (playerType == PlayerType.MINIMIZING_PLAYER) {
             return negamaxRoot(root, 
-                               depth - 1,
-                               Double.NEGATIVE_INFINITY,
-                               Double.POSITIVE_INFINITY,
-                               1);
-        } else {
-            return negamaxRoot(root,
-                               depth - 1,
+                               depth,
                                Double.NEGATIVE_INFINITY,
                                Double.POSITIVE_INFINITY,
                                -1);
+        } else {
+            return negamaxRoot(root,
+                               depth,
+                               Double.NEGATIVE_INFINITY,
+                               Double.POSITIVE_INFINITY,
+                               +1);
         }
     }
     
@@ -56,8 +56,8 @@ public final class ConnectFourNegamaxSearchEngine implements SearchEngine<Connec
             if (!root.makePly(
                     x, 
                     color == 1 ? 
-                            PlayerType.MINIMIZING_PLAYER : 
-                            PlayerType.MAXIMIZING_PLAYER)) {
+                            PlayerType.MAXIMIZING_PLAYER : 
+                            PlayerType.MINIMIZING_PLAYER)) {
                 
                 continue;
             }
@@ -69,9 +69,16 @@ public final class ConnectFourNegamaxSearchEngine implements SearchEngine<Connec
                              -alpha,
                              -color);
             
-            if (value < score) {
-                value = score;
-                bestMoveState = root;
+            if (color == +1) {
+                if (value > score) {
+                    value = score;
+                    bestMoveState = new ConnectFourBoard(root);
+                }
+            } else {
+                if (value < score) {
+                    value = score;
+                    bestMoveState = new ConnectFourBoard(root);
+                }
             }
             
             root.unmakePly(x);
@@ -102,8 +109,8 @@ public final class ConnectFourNegamaxSearchEngine implements SearchEngine<Connec
             if (!root.makePly(
                     x, 
                     color == 1 ? 
-                            PlayerType.MINIMIZING_PLAYER : 
-                            PlayerType.MAXIMIZING_PLAYER)) {
+                            PlayerType.MAXIMIZING_PLAYER : 
+                            PlayerType.MINIMIZING_PLAYER)) {
                 
                 continue;
             }
@@ -116,6 +123,8 @@ public final class ConnectFourNegamaxSearchEngine implements SearchEngine<Connec
                                 -beta, 
                                 -alpha, 
                                 -color));
+            
+            root.unmakePly(x);
             
             alpha = Math.max(alpha, value);
             

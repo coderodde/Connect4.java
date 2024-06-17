@@ -4,6 +4,7 @@ import com.github.coderodde.game.zerosum.HeuristicFunction;
 import com.github.coderodde.game.zerosum.PlayerType;
 import java.util.Scanner;
 import com.github.coderodde.game.zerosum.SearchEngine;
+import com.github.coderodde.game.zerosum.impl.ConnectFourNegamaxSearchEngine;
 import com.github.coderodde.game.zerosum.impl.ParallelConnectFourAlphaBetaPruningSearchEngine;
 
 /**
@@ -26,11 +27,14 @@ public class ConnectFour {
         final HeuristicFunction<ConnectFourBoard> heuristicFunction = 
                 new ConnectFourHeuristicFunction();
         
-        final SearchEngine<ConnectFourBoard> bot = 
-                new ParallelConnectFourAlphaBetaPruningSearchEngine(
-                        heuristicFunction, 
-                        2);
+//        final SearchEngine<ConnectFourBoard> bot = 
+//                new ParallelConnectFourAlphaBetaPruningSearchEngine(
+//                        heuristicFunction, 
+//                        2);
         
+        final SearchEngine<ConnectFourBoard> bot = 
+                new ConnectFourNegamaxSearchEngine(heuristicFunction);
+
         ConnectFourBoard currentBoard = new ConnectFourBoard();
         
         while (true) {

@@ -6,11 +6,12 @@ import com.github.coderodde.game.zerosum.PlayerType;
 import com.github.coderodde.game.zerosum.SearchEngine;
 import com.github.coderodde.game.zerosum.impl.AlphaBetaPruningSearchEngine;
 import com.github.coderodde.game.zerosum.impl.ConnectFourAlphaBetaPruningSearchEngine;
+import com.github.coderodde.game.zerosum.impl.ConnectFourNegamaxSearchEngine;
 import com.github.coderodde.game.zerosum.impl.ParallelConnectFourAlphaBetaPruningSearchEngine;
 
 public class ConnectFourSearchEngineComparison {
     
-    private static final int DEPTH = 10;
+    private static final int DEPTH = 2;
     private static final int SEED_DEPTH = 2;
 
     public static void main(String[] args) {
@@ -64,6 +65,21 @@ public class ConnectFourSearchEngineComparison {
         
         System.out.println(r);
         
+        startTime = System.currentTimeMillis();
+        
+        r = new ConnectFourNegamaxSearchEngine(heuristicFunction)
+                .search(b, DEPTH);
+        
+        endTime = System.currentTimeMillis();
+        
+        System.out.printf(
+            """
+            ConnectFourNegamaxSearchEngine in %d milliseconds.
+            """,
+            endTime - startTime);
+        
+        System.out.println(r);
+        
         System.out.println("<<< AI vs. AI >>>");
         
         long duration1 = 0L;
@@ -74,18 +90,21 @@ public class ConnectFourSearchEngineComparison {
                 new ConnectFourAlphaBetaPruningSearchEngine(heuristicFunction);
         
         final SearchEngine<ConnectFourBoard> engine2 = 
-                new ParallelConnectFourAlphaBetaPruningSearchEngine(
-                        heuristicFunction, 
-                        SEED_DEPTH);
+                new ConnectFourNegamaxSearchEngine(heuristicFunction);
         
         ConnectFourBoard board = new ConnectFourBoard();
         System.out.println(board);
         
-        final int ENGINE1_DEPTH = 9;
-        final int ENGINE2_DEPTH = 8;
+        final int ENGINE1_DEPTH = 2;
+        final int ENGINE2_DEPTH = 2;
         
-        System.out.printf("Serial AI depth:   %d\n", ENGINE1_DEPTH);
-        System.out.printf("Parallel AI depth: %d\n", ENGINE2_DEPTH);
+        System.out.printf(
+                "ConnectFourAlphaBetaPruningSearchEngine depth:   %d\n",
+                ENGINE1_DEPTH);
+        
+        System.out.printf(
+                "ConnectFourNegamaxSearchEngine depth:            %d\n", 
+                ENGINE2_DEPTH);
         
         while (true) {
             
@@ -104,7 +123,9 @@ public class ConnectFourSearchEngineComparison {
             
             System.out.println(board);
             
-            System.out.printf("Serial engine in %d milliseconds.\n", duration);
+            System.out.printf(
+                    "Alpha-beta pruning engine in %d milliseconds.\n",
+                    duration);
             
             if (board.isTerminal()) {
                 report(board);
@@ -126,7 +147,7 @@ public class ConnectFourSearchEngineComparison {
             System.out.println(board);
             
             System.out.printf(
-                    "Parallel engine in %d milliseconds.\n", 
+                    "Negamax engine in %d milliseconds.\n", 
                     duration);
             
             if (board.isTerminal()) {
