@@ -4,8 +4,8 @@ import com.github.coderodde.game.zerosum.HeuristicFunction;
 import com.github.coderodde.game.zerosum.PlayerType;
 import java.util.Scanner;
 import com.github.coderodde.game.zerosum.SearchEngine;
-import com.github.coderodde.game.zerosum.impl.ConnectFourNegamaxSearchEngine;
-import com.github.coderodde.game.zerosum.impl.ParallelConnectFourAlphaBetaPruningSearchEngine;
+import com.github.coderodde.game.connect4.impl.ConnectFourNegamaxSearchEngine;
+import com.github.coderodde.game.connect4.impl.ParallelConnectFourAlphaBetaPruningSearchEngine;
 
 /**
  * This class implements the REPL for playring Connect Four against an AI bot.

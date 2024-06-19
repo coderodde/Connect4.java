@@ -1,4 +1,4 @@
-package com.github.coderodde.game.zerosum.impl;
+package com.github.coderodde.game.connect4.impl;
 
 import com.github.coderodde.game.connect4.ConnectFourBoard;
 import com.github.coderodde.game.zerosum.AbstractConnectFourSearchEngine;
@@ -6,7 +6,9 @@ import com.github.coderodde.game.zerosum.HeuristicFunction;
 import com.github.coderodde.game.zerosum.PlayerType;
 
 /**
- *
+ * This class implements the PVS (Principal Variation Search) algorithm for 
+ * playing Connect Four.
+ * 
  * @version 1.0.0 (Jun 18, 2024)
  * @since 1.0.0 (Jun 18, 2024)
  */

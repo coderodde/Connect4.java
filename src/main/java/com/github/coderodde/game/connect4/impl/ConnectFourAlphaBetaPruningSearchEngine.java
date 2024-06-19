@@ -1,4 +1,4 @@
-package com.github.coderodde.game.zerosum.impl;
+package com.github.coderodde.game.connect4.impl;
 
 import com.github.coderodde.game.connect4.ConnectFourBoard;
 import com.github.coderodde.game.connect4.SearchProgress;

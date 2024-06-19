@@ -4,11 +4,11 @@ import com.github.coderodde.game.connect4.ConnectFourBoard;
 import com.github.coderodde.game.connect4.ConnectFourHeuristicFunction;
 import com.github.coderodde.game.zerosum.PlayerType;
 import com.github.coderodde.game.zerosum.SearchEngine;
-import com.github.coderodde.game.zerosum.impl.AlphaBetaPruningSearchEngine;
-import com.github.coderodde.game.zerosum.impl.ConnectFourAlphaBetaPruningSearchEngine;
-import com.github.coderodde.game.zerosum.impl.ConnectFourNegamaxSearchEngine;
-import com.github.coderodde.game.zerosum.impl.ConnectFourPrincipalVariationSearchEngine;
-import com.github.coderodde.game.zerosum.impl.ParallelConnectFourAlphaBetaPruningSearchEngine;
+import com.github.coderodde.game.zerosum.AlphaBetaPruningSearchEngine;
+import com.github.coderodde.game.connect4.impl.ConnectFourAlphaBetaPruningSearchEngine;
+import com.github.coderodde.game.connect4.impl.ConnectFourNegamaxSearchEngine;
+import com.github.coderodde.game.connect4.impl.ConnectFourPrincipalVariationSearchEngine;
+import com.github.coderodde.game.connect4.impl.ParallelConnectFourAlphaBetaPruningSearchEngine;
 
 public class ConnectFourSearchEngineComparison {
     

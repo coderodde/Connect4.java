@@ -1,4 +1,4 @@
-package com.github.coderodde.game.zerosum.impl;
+package com.github.coderodde.game.zerosum;
 
 import com.github.coderodde.game.zerosum.PlayerType;
 import com.github.coderodde.game.zerosum.GameState;
