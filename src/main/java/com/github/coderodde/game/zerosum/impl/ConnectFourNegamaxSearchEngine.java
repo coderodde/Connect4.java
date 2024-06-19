@@ -1,10 +1,9 @@
 package com.github.coderodde.game.zerosum.impl;
 
 import com.github.coderodde.game.connect4.ConnectFourBoard;
-import static com.github.coderodde.game.connect4.ConnectFourBoard.COLUMNS;
+import com.github.coderodde.game.zerosum.AbstractConnectFourSearchEngine;
 import com.github.coderodde.game.zerosum.HeuristicFunction;
 import com.github.coderodde.game.zerosum.PlayerType;
-import com.github.coderodde.game.zerosum.SearchEngine;
 
 /**
  * This class implements a Negamax algorithm with alpha-beta pruning for playing
@@ -13,7 +12,8 @@ import com.github.coderodde.game.zerosum.SearchEngine;
  * @version 1.0.0 (Jun 16, 2024)
  * @since 1.0.0 (Jun 16, 2024)
  */
-public final class ConnectFourNegamaxSearchEngine implements SearchEngine<ConnectFourBoard> {
+public final class ConnectFourNegamaxSearchEngine
+        extends AbstractConnectFourSearchEngine {
 
     private final HeuristicFunction<ConnectFourBoard> heuristicFunction;
     
@@ -33,13 +33,13 @@ public final class ConnectFourNegamaxSearchEngine implements SearchEngine<Connec
                                depth,
                                Double.NEGATIVE_INFINITY,
                                Double.POSITIVE_INFINITY,
-                               -1); // -1 for the minimizing player.
+                               -1);
         } else {
             return negamaxRoot(root,
                                depth,
                                Double.NEGATIVE_INFINITY,
                                Double.POSITIVE_INFINITY,
-                               1); // +1 for the maximizing player.
+                               +1);
         }
     }
     
@@ -49,12 +49,12 @@ public final class ConnectFourNegamaxSearchEngine implements SearchEngine<Connec
                                          double beta,
                                          final int color) {
         
-        double value = Double.NEGATIVE_INFINITY * color;
+        double value = Double.NEGATIVE_INFINITY;
         ConnectFourBoard bestMoveState = null;
         
-        for (int x = 0; x < COLUMNS; x++) {
+        for (int x : PLIES) {
             if (!root.makePly(
-                    x,
+                    x, 
                     color == 1 ? 
                             PlayerType.MAXIMIZING_PLAYER : 
                             PlayerType.MINIMIZING_PLAYER)) {
@@ -69,7 +69,7 @@ public final class ConnectFourNegamaxSearchEngine implements SearchEngine<Connec
                              -alpha,
                              -color);
             
-            if (color == 1) {
+            if (color == +1) {
                 if (value < score) {
                     value = score;
                     bestMoveState = new ConnectFourBoard(root);
@@ -105,12 +105,12 @@ public final class ConnectFourNegamaxSearchEngine implements SearchEngine<Connec
         
         double value = Double.NEGATIVE_INFINITY;
         
-        for (int x = 0; x < COLUMNS; x++) {
+        for (int x : PLIES) {
             if (!root.makePly(
                     x, 
-                    color == -1 ? 
-                            PlayerType.MINIMIZING_PLAYER : 
-                            PlayerType.MAXIMIZING_PLAYER)) {
+                    color == 1 ? 
+                            PlayerType.MAXIMIZING_PLAYER : 
+                            PlayerType.MINIMIZING_PLAYER)) {
                 
                 continue;
             }
@@ -123,6 +123,8 @@ public final class ConnectFourNegamaxSearchEngine implements SearchEngine<Connec
                                 -beta, 
                                 -alpha, 
                                 -color));
+            
+            root.unmakePly(x);
             
             alpha = Math.max(alpha, value);
             

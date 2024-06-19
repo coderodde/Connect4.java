@@ -1,11 +1,10 @@
 package com.github.coderodde.game.zerosum.impl;
 
 import com.github.coderodde.game.connect4.ConnectFourBoard;
-import static com.github.coderodde.game.connect4.ConnectFourBoard.COLUMNS;
 import com.github.coderodde.game.connect4.SearchProgress;
+import com.github.coderodde.game.zerosum.AbstractConnectFourSearchEngine;
 import com.github.coderodde.game.zerosum.PlayerType;
 import com.github.coderodde.game.zerosum.HeuristicFunction;
-import com.github.coderodde.game.zerosum.SearchEngine;
 
 /**
  * This class implements the 
@@ -16,7 +15,7 @@ import com.github.coderodde.game.zerosum.SearchEngine;
  * @since 1.0.0 (Jun 5, 2024)
  */
 public final class ConnectFourAlphaBetaPruningSearchEngine
-        implements SearchEngine<ConnectFourBoard> {
+        extends AbstractConnectFourSearchEngine {
     
     private static final int PROGRESS_DEPTH = 2;
 
@@ -73,7 +72,7 @@ public final class ConnectFourAlphaBetaPruningSearchEngine
             double value = Double.NEGATIVE_INFINITY;
             double tentativeValue = Double.NEGATIVE_INFINITY;
             
-            for (int x = 0; x < COLUMNS; x++) {
+            for (int x : PLIES) {
                 if (!root.makePly(x, PlayerType.MAXIMIZING_PLAYER)) {
                     continue;
                 }
@@ -100,7 +99,7 @@ public final class ConnectFourAlphaBetaPruningSearchEngine
             double value = Double.POSITIVE_INFINITY;
             double tentativeValue = Double.POSITIVE_INFINITY;
             
-            for (int x = 0; x < COLUMNS; x++) {
+            for (int x : PLIES) {
                 if (!root.makePly(x, PlayerType.MINIMIZING_PLAYER)) {
                     continue;
                 }
@@ -144,7 +143,7 @@ public final class ConnectFourAlphaBetaPruningSearchEngine
         if (playerType == PlayerType.MAXIMIZING_PLAYER) {
             double value = Double.NEGATIVE_INFINITY;
             
-            for (int x = 0; x < COLUMNS; x++) {
+            for (int x : PLIES) {
                 if (!state.makePly(x, PlayerType.MAXIMIZING_PLAYER)) {
                     continue;
                 }
@@ -169,7 +168,7 @@ public final class ConnectFourAlphaBetaPruningSearchEngine
         } else {
             double value = Double.POSITIVE_INFINITY;
             
-            for (int x = 0; x < COLUMNS; x++) {
+            for (int x : PLIES) {
                 if (!state.makePly(x, PlayerType.MINIMIZING_PLAYER)) {
                     continue;
                 }

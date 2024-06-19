@@ -15,11 +15,11 @@ import com.github.coderodde.game.zerosum.impl.ParallelConnectFourAlphaBetaPrunin
  */
 public class ConnectFour {
    
-    private static final int DEFAULT_DEPTH = 2;
+    private static final int DEFAULT_DEPTH = 8;
     private static final int MINIMUM_DEPTH = 1;
 
     public static void main(String[] args) {
-        final int depth = 2; //parseDepth(args);
+        final int depth = 8; // parseDepth(args);
         
         System.out.printf(">>> Using search depth: %d.\n", depth);
         
@@ -35,6 +35,7 @@ public class ConnectFour {
 //                        heuristicFunction, 
 //                        2);
         
+
         ConnectFourBoard currentBoard = new ConnectFourBoard();
         
         while (true) {
