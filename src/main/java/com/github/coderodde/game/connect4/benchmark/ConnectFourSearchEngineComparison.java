@@ -16,7 +16,8 @@ public class ConnectFourSearchEngineComparison {
     private static final int SEED_DEPTH = 2;
     private static final int ALPHA_BETA_PRUNING_ENGINE_DEPTH = 9;
     private static final int NEGAMAX_ENGINE_DEPTH = 9;
-
+    private static final int PVS_ENGINE_DEPTH = 9;
+    
     public static void main(String[] args) {
         final ConnectFourBoard b = new ConnectFourBoard();
         ConnectFourBoard r;
@@ -94,10 +95,6 @@ public class ConnectFourSearchEngineComparison {
         
         System.out.println(r);
         
-        System.out.println();
-        System.out.println("<<< ConnnectFourAlphaBetaPruningSearchEngine vs. " + 
-                           "ConnectFourNegamaxSearchEngine >>>");
-        
         long duration1 = 0L;
         long duration2 = 0L;
         long duration = 0L;
@@ -106,7 +103,13 @@ public class ConnectFourSearchEngineComparison {
                 new ConnectFourAlphaBetaPruningSearchEngine(heuristicFunction);
         
         final SearchEngine<ConnectFourBoard> engine2 = 
-                new ConnectFourNegamaxSearchEngine(heuristicFunction);
+                new ConnectFourPrincipalVariationSearchEngine(
+                        heuristicFunction);
+        
+        System.out.println();
+        System.out.printf("<<< %s vs. %s >>>\n",
+                          engine1.getClass().getSimpleName(),
+                          engine2.getClass().getSimpleName());
         
         ConnectFourBoard board = new ConnectFourBoard();
         System.out.println(board);
@@ -114,10 +117,10 @@ public class ConnectFourSearchEngineComparison {
         System.out.printf(
                 "ConnectFourAlphaBetaPruningSearchEngine depth:   %d\n",
                 ALPHA_BETA_PRUNING_ENGINE_DEPTH);
-        
+      
         System.out.printf(
-                "ConnectFourNegamaxSearchEngine depth:            %d\n", 
-                NEGAMAX_ENGINE_DEPTH);
+                "ConnectFourPrincipalVariationSearchEngine depth:  %d\n", 
+                PVS_ENGINE_DEPTH);
         
         while (true) {
             
@@ -125,7 +128,7 @@ public class ConnectFourSearchEngineComparison {
             startTime = System.currentTimeMillis();
             
             board = engine1.search(board,
-                                   ALPHA_BETA_PRUNING_ENGINE_DEPTH,
+                                   NEGAMAX_ENGINE_DEPTH,
                                    PlayerType.MINIMIZING_PLAYER);
             
             endTime = System.currentTimeMillis();
@@ -148,7 +151,7 @@ public class ConnectFourSearchEngineComparison {
             startTime = System.currentTimeMillis();
             
             board = engine2.search(board, 
-                                   NEGAMAX_ENGINE_DEPTH,
+                                   PVS_ENGINE_DEPTH,
                                    PlayerType.MAXIMIZING_PLAYER);
             
             endTime = System.currentTimeMillis();
@@ -160,7 +163,7 @@ public class ConnectFourSearchEngineComparison {
             System.out.println(board);
             
             System.out.printf(
-                    "Negamax engine (O) in %d milliseconds.\n", 
+                    "PVS engine (O) in %d milliseconds.\n", 
                     duration);
             
             if (board.isTerminal()) {
@@ -170,11 +173,11 @@ public class ConnectFourSearchEngineComparison {
         }
         
         System.out.printf(
-                "Alpha-beta pruning engine in total %d milliseconds.\n", 
+                "Negamax engine in total %d milliseconds.\n", 
                 duration1);
         
         System.out.printf(
-                "Negamax engine in total %d milliseconds.\n", 
+                "PVS engine in total %d milliseconds.\n", 
                 duration2);
     }
     
@@ -188,7 +191,7 @@ public class ConnectFourSearchEngineComparison {
         } else if (connectFourBoard
                 .isWinningFor(PlayerType.MAXIMIZING_PLAYER)) {
             
-            System.out.println("RESULT: Negamax engine wins.");
+            System.out.println("RESULT: PVS engine wins.");
         } else {
             
             throw new IllegalStateException("Should not get here.");
