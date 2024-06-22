@@ -119,7 +119,7 @@ implements SearchEngine<ConnectFourBoard> {
         }
         
         // Compute the global seed state score map:
-        final Map<ConnectFourBoard, Double> globalScoreMap = 
+        final Map<ConnectFourBoard, Integer> globalScoreMap = 
                 getGlobalScoreMap(searchThreadList);
         
         // Construct the seed state heuristic function:
@@ -309,11 +309,11 @@ implements SearchEngine<ConnectFourBoard> {
      * 
      * @return the combined global score map.
      */
-    private static Map<ConnectFourBoard, Double>
+    private static Map<ConnectFourBoard, Integer>
          getGlobalScoreMap(final List<SearchThread> searchThreadList) {
         
         // Construct the global score map:
-        final Map<ConnectFourBoard, Double> globalScoreMap = new HashMap<>();
+        final Map<ConnectFourBoard, Integer> globalScoreMap = new HashMap<>();
         
         // Load the global score map from each search thread score map:
         for (final SearchThread searchThread : searchThreadList) {
@@ -439,7 +439,7 @@ final class SearchThread extends Thread {
     /**
      * This map maps each seed states to its score after computation.
      */
-    private final Map<ConnectFourBoard, Double> scoreMap;
+    private final Map<ConnectFourBoard, Integer> scoreMap;
 
     /**
      * The heuristic function for evaluating intermediate states.
@@ -482,7 +482,7 @@ final class SearchThread extends Thread {
      * 
      * @return the score map.
      */
-    Map<ConnectFourBoard, Double> getScoreMap() {
+    Map<ConnectFourBoard, Integer> getScoreMap() {
         return scoreMap;
     }
 
@@ -492,7 +492,7 @@ final class SearchThread extends Thread {
     @Override
     public void run() {
         for (final ConnectFourBoard root : workload) {
-            final double score = 
+            final int score = 
                     alphaBetaImpl(
                             root,
                             depth, 
@@ -504,18 +504,18 @@ final class SearchThread extends Thread {
         }
     }
 
-    private double alphaBetaImpl(final ConnectFourBoard root,
-                                 final int depth,
-                                 double alpha,
-                                 double beta,
-                                 final PlayerType rootPlayerType) {
+    private int alphaBetaImpl(final ConnectFourBoard root,
+                              final int depth,
+                              double alpha,
+                              double beta,
+                              final PlayerType rootPlayerType) {
         
         if (depth == 0 || root.isTerminal()) {
             return heuristicFunction.evaluate(root, depth);
         }
 
         if (rootPlayerType == PlayerType.MAXIMIZING_PLAYER) {
-            double value = Double.NEGATIVE_INFINITY;
+            int value = Integer.MIN_VALUE;
 
             for (int x = 0; x < COLUMNS; x++) {
                 if (!root.makePly(x, PlayerType.MAXIMIZING_PLAYER)) {
@@ -540,7 +540,7 @@ final class SearchThread extends Thread {
 
             return value;
         } else {
-            double value = Double.POSITIVE_INFINITY;
+            int value = Integer.MAX_VALUE;
 
             for (int x = 0; x < COLUMNS; x++) {
                 if (!root.makePly(x, PlayerType.MINIMIZING_PLAYER)) {
@@ -574,16 +574,16 @@ final class SearchThread extends Thread {
 final class SeedStateHeuristicFunction
         implements HeuristicFunction<ConnectFourBoard> {
 
-    private final Map<ConnectFourBoard, Double> scoreMap;
+    private final Map<ConnectFourBoard, Integer> scoreMap;
 
     SeedStateHeuristicFunction(
-            final Map<ConnectFourBoard, Double> scoreMap) {
+            final Map<ConnectFourBoard, Integer> scoreMap) {
 
         this.scoreMap = scoreMap;
     }
 
     @Override
-    public double evaluate(ConnectFourBoard state, int depth) {
+    public int evaluate(ConnectFourBoard state, int depth) {
         return scoreMap.get(state);
     }
 }

@@ -29,8 +29,8 @@ public final class ConnectFourPrincipalVariationSearchEngine
                                    final PlayerType playerType) {
         return pvsRoot(root,
                        depth,
-                       Double.NEGATIVE_INFINITY,
-                       Double.POSITIVE_INFINITY,
+                       Integer.MIN_VALUE,
+                       Integer.MAX_VALUE,
                        playerType == PlayerType.MINIMIZING_PLAYER ?
                                   -1 :
                                   +1);
@@ -38,11 +38,11 @@ public final class ConnectFourPrincipalVariationSearchEngine
     
     private ConnectFourBoard pvsRoot(final ConnectFourBoard root,
                                      final int depth,
-                                     double alpha,
-                                     double beta,
+                                     int alpha,
+                                     int beta,
                                      final int color) {
         
-        double value = Double.NEGATIVE_INFINITY;   
+        int value = Integer.MIN_VALUE;   
         ConnectFourBoard bestMoveState = null;
         
         for (final int x : PLIES) {
@@ -55,22 +55,15 @@ public final class ConnectFourPrincipalVariationSearchEngine
                 continue;
             }
             
-            final double score = -pvs(root, 
-                                      depth - 1, 
-                                      -beta,
-                                      -alpha,
-                                      -color);
+            final int score = -pvs(root, 
+                                   depth - 1, 
+                                   -beta,
+                                   -alpha,
+                                   -color);
             
-            if (color == +1) {
-                if (value < score) {
-                    value = score;
-                    bestMoveState = new ConnectFourBoard(root);
-                }
-            } else {
-                if (value > score) {
-                    value = score;
-                    bestMoveState = new ConnectFourBoard(root);
-                }
+            if (value < score) {
+                value = score;
+                bestMoveState = new ConnectFourBoard(root);
             }
             
             root.unmakePly(x);
@@ -85,11 +78,11 @@ public final class ConnectFourPrincipalVariationSearchEngine
         return bestMoveState;
     }
     
-    private double pvs(final ConnectFourBoard root,
-                       final int depth,
-                       double alpha,
-                       double beta,
-                       final int color) {
+    private int pvs(final ConnectFourBoard root,
+                    final int depth,
+                    int alpha,
+                    int beta,
+                    final int color) {
         
         if (depth == 0 || root.isTerminal()) {
             return color * heuristicFunction.evaluate(root, depth);
@@ -106,7 +99,7 @@ public final class ConnectFourPrincipalVariationSearchEngine
                 continue;
             }
             
-            double score;
+            int score;
             
             if (isFirstState) {
                 isFirstState = false;

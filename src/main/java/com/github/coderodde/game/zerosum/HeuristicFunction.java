@@ -10,5 +10,5 @@ public interface HeuristicFunction<S extends GameState<S>> {
      * 
      * @return the score of the input game state.
      */
-    public double evaluate(final S state, final int depth);
+    public int evaluate(final S state, final int depth);
 }

@@ -1,7 +1,6 @@
 package com.github.coderodde.game.connect4.impl;
 
 import com.github.coderodde.game.connect4.ConnectFourBoard;
-import com.github.coderodde.game.connect4.SearchProgress;
 import com.github.coderodde.game.zerosum.AbstractConnectFourSearchEngine;
 import com.github.coderodde.game.zerosum.PlayerType;
 import com.github.coderodde.game.zerosum.HeuristicFunction;
@@ -17,12 +16,8 @@ import com.github.coderodde.game.zerosum.HeuristicFunction;
 public final class ConnectFourAlphaBetaPruningSearchEngine
         extends AbstractConnectFourSearchEngine {
     
-    private static final int PROGRESS_DEPTH = 2;
-
     private ConnectFourBoard bestMoveState;
     private final HeuristicFunction<ConnectFourBoard> heuristicFunction;
-    private SearchProgress searchProgress;
-    private int requestedDepth;
     
     public ConnectFourAlphaBetaPruningSearchEngine(
             final HeuristicFunction<ConnectFourBoard> heuristicFunction) {
@@ -41,13 +36,6 @@ public final class ConnectFourAlphaBetaPruningSearchEngine
     public ConnectFourBoard search(final ConnectFourBoard root,
                                    int depth, 
                                    final PlayerType playerType) {
-        
-        this.requestedDepth = depth;
-        
-        if (searchProgress != null) {
-            searchProgress.clear();
-        }
-        
         bestMoveState = null;
         
         alphaBetaRootImpl(root, 
@@ -57,10 +45,6 @@ public final class ConnectFourAlphaBetaPruningSearchEngine
         return bestMoveState;
     }
     
-    public void setSearchProgress(final SearchProgress searchProgress) {
-        this.searchProgress = searchProgress;
-    }
-    
     private void alphaBetaRootImpl(final ConnectFourBoard root, 
                                    final int depth,
                                    final PlayerType playerType) {
@@ -68,11 +52,11 @@ public final class ConnectFourAlphaBetaPruningSearchEngine
         if (playerType == PlayerType.MAXIMIZING_PLAYER) {
             
             // Try to maximize the value:
-            double alpha = Double.NEGATIVE_INFINITY;
-            double value = Double.NEGATIVE_INFINITY;
-            double tentativeValue = Double.NEGATIVE_INFINITY;
+            int alpha = Integer.MIN_VALUE;
+            int value = Integer.MIN_VALUE;
+            int tentativeValue = Integer.MIN_VALUE;
             
-            for (int x : PLIES) {
+            for (final int x : PLIES) {
                 if (!root.makePly(x, PlayerType.MAXIMIZING_PLAYER)) {
                     continue;
                 }
@@ -95,11 +79,11 @@ public final class ConnectFourAlphaBetaPruningSearchEngine
             }
         } else {
             
-            double beta = Double.POSITIVE_INFINITY;
-            double value = Double.POSITIVE_INFINITY;
-            double tentativeValue = Double.POSITIVE_INFINITY;
+            int beta = Integer.MAX_VALUE;
+            int value = Integer.MAX_VALUE;
+            int tentativeValue = Integer.MAX_VALUE;
             
-            for (int x : PLIES) {
+            for (final int x : PLIES) {
                 if (!root.makePly(x, PlayerType.MINIMIZING_PLAYER)) {
                     continue;
                 }
@@ -123,25 +107,18 @@ public final class ConnectFourAlphaBetaPruningSearchEngine
         }
     }
     
-    private double alphaBetaImpl(final ConnectFourBoard state,
-                                 final int depth, 
-                                 double alpha,
-                                 double beta,
-                                 final PlayerType playerType) {
-
-        if (requestedDepth - depth == PROGRESS_DEPTH) {
-            if (searchProgress != null) {
-                searchProgress.hit();
-                searchProgress.setProgressBarValue();
-            }
-        }
+    private int alphaBetaImpl(final ConnectFourBoard state,
+                              final int depth, 
+                              double alpha,
+                              double beta,
+                              final PlayerType playerType) {
         
         if (depth == 0 || state.isTerminal()) {
             return heuristicFunction.evaluate(state, depth);
         }
         
         if (playerType == PlayerType.MAXIMIZING_PLAYER) {
-            double value = Double.NEGATIVE_INFINITY;
+            int value = Integer.MIN_VALUE;
             
             for (int x : PLIES) {
                 if (!state.makePly(x, PlayerType.MAXIMIZING_PLAYER)) {
@@ -166,7 +143,7 @@ public final class ConnectFourAlphaBetaPruningSearchEngine
             
             return value;
         } else {
-            double value = Double.POSITIVE_INFINITY;
+            int value = Integer.MAX_VALUE;
             
             for (int x : PLIES) {
                 if (!state.makePly(x, PlayerType.MINIMIZING_PLAYER)) {
