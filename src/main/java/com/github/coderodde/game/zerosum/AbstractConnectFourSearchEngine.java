@@ -13,4 +13,6 @@ public abstract class AbstractConnectFourSearchEngine
         implements SearchEngine<ConnectFourBoard> {
    
     protected static final int[] PLIES = { 3, 2, 4, 1, 5, 0, 6 };
+    public static final int MAX_INT = +1_000_000_000;
+    public static final int MIN_INT = -1_000_000_000;
 }

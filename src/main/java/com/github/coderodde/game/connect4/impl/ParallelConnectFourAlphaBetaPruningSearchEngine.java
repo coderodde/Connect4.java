@@ -3,9 +3,9 @@ package com.github.coderodde.game.connect4.impl;
 import com.github.coderodde.game.connect4.ConnectFourBoard;
 import static com.github.coderodde.game.connect4.ConnectFourBoard.COLUMNS;
 import com.github.coderodde.game.connect4.ConnectFourHeuristicFunction;
+import com.github.coderodde.game.zerosum.AbstractConnectFourSearchEngine;
 import com.github.coderodde.game.zerosum.HeuristicFunction;
 import com.github.coderodde.game.zerosum.PlayerType;
-import com.github.coderodde.game.zerosum.SearchEngine;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,7 +20,7 @@ import java.util.Map;
  * @since 1.0.0 (Jun 7, 2024)
  */
 public final class ParallelConnectFourAlphaBetaPruningSearchEngine 
-implements SearchEngine<ConnectFourBoard> {
+extends AbstractConnectFourSearchEngine {
 
     private static final int MINIMUM_SEED_DEPTH = 2;
     private static final int DEFAULT_SEED_DEPTH = 2;
@@ -515,7 +515,7 @@ final class SearchThread extends Thread {
         }
 
         if (rootPlayerType == PlayerType.MAXIMIZING_PLAYER) {
-            int value = Integer.MIN_VALUE;
+            int value = AbstractConnectFourSearchEngine.MIN_INT;
 
             for (int x = 0; x < COLUMNS; x++) {
                 if (!root.makePly(x, PlayerType.MAXIMIZING_PLAYER)) {
@@ -540,7 +540,7 @@ final class SearchThread extends Thread {
 
             return value;
         } else {
-            int value = Integer.MAX_VALUE;
+            int value = AbstractConnectFourSearchEngine.MAX_INT;
 
             for (int x = 0; x < COLUMNS; x++) {
                 if (!root.makePly(x, PlayerType.MINIMIZING_PLAYER)) {

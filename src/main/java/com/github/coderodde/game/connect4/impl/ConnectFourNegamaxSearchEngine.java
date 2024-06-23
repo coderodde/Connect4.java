@@ -31,14 +31,14 @@ public final class ConnectFourNegamaxSearchEngine
         if (playerType == PlayerType.MINIMIZING_PLAYER) {
             return negamaxRoot(root, 
                                depth,
-                               Integer.MIN_VALUE,
-                               Integer.MAX_VALUE,
+                               MIN_INT,
+                               MAX_INT,
                                -1);
         } else {
             return negamaxRoot(root,
                                depth,
-                               Integer.MIN_VALUE,
-                               Integer.MAX_VALUE,
+                               MIN_INT,
+                               MAX_INT,
                                +1);
         }
     }
@@ -49,7 +49,7 @@ public final class ConnectFourNegamaxSearchEngine
                                          int beta,
                                          final int color) {
         
-        int value = Integer.MIN_VALUE;
+        int value = MIN_INT;
         ConnectFourBoard bestMoveState = null;
         
         for (int x : PLIES) {
@@ -95,7 +95,7 @@ public final class ConnectFourNegamaxSearchEngine
             return color * heuristicFunction.evaluate(root, depth);
         }
         
-        int value = Integer.MIN_VALUE;
+        int value = MIN_INT;
         
         for (int x : PLIES) {
             if (!root.makePly(

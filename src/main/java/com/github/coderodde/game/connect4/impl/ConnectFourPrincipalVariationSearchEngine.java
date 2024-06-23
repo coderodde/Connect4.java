@@ -29,8 +29,8 @@ public final class ConnectFourPrincipalVariationSearchEngine
                                    final PlayerType playerType) {
         return pvsRoot(root,
                        depth,
-                       Integer.MIN_VALUE,
-                       Integer.MAX_VALUE,
+                       MIN_INT,
+                       MAX_INT,
                        playerType == PlayerType.MINIMIZING_PLAYER ?
                                   -1 :
                                   +1);
@@ -42,7 +42,7 @@ public final class ConnectFourPrincipalVariationSearchEngine
                                      int beta,
                                      final int color) {
         
-        int value = Integer.MIN_VALUE;   
+        int value = MIN_INT;   
         ConnectFourBoard bestMoveState = null;
         
         for (final int x : PLIES) {
